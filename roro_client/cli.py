@@ -1,6 +1,6 @@
-import clickk
+import click
 
-@clickk.group()
+@click.group()
 def cli():
     pass
 

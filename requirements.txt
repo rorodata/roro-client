@@ -1,0 +1,2 @@
+click==6.7
+firefly-python==0.1.4
