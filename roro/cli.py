@@ -1,8 +1,15 @@
+import os
+import stat
 import click
 import datetime
+from netrc import netrc
 from tabulate import tabulate
 from . import projects
 from . import helpers as h
+from .projects import login as roro_login
+
+from firefly.client import FireflyError
+from requests import ConnectionError
 
 @click.group()
 def cli():
@@ -14,7 +21,27 @@ def cli():
 def login(email, password):
     """Login to rorodata platform.
     """
-    pass
+    prefix = '.' if os.name != 'nt' else '_'
+    netrc_file = os.path.join(os.path.expanduser('~'), prefix+'netrc')
+    # theese flags works both on windows and linux according to this stackoverflow
+    # https://stackoverflow.com/questions/27500067/chmod-issue-to-change-file-permission-using-python#27500153
+    if not os.path.exists(netrc_file):
+        touch_file(netrc_file, stat.S_IREAD|stat.S_IWRITE)
+    try:
+        token = roro_login(email, password)
+        rc = netrc()
+        with open(netrc_file, 'w') as f:
+            rc.hosts[projects.SERVER_URL] = (email, None, token)
+            f.write(str(rc))
+    except ConnectionError:
+        print('unable to connect to the server, try again later')
+    except FireflyError as e:
+        print(e)
+
+def touch_file(path, permissions):
+    with open(path, 'w'):
+        pass
+    os.chmod(path, permissions)
 
 @cli.command()
 @click.argument('project')
