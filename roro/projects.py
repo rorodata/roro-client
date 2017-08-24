@@ -4,6 +4,10 @@ import firefly
 
 SERVER_URL = "https://api.rorodata.com/"
 
+def login(email, password):
+    client = firefly.Client(SERVER_URL)
+    return client.login(email=email, password=password)
+
 class Project:
     def __init__(self, name, runtime):
         self.name = name
