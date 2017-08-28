@@ -56,3 +56,24 @@ def test_bad_login():
     runner.invoke(cli.login, input='bad_user@test.com\ntest\n')
     rc = netrc()
     assert rc.hosts.get(projects.SERVER_URL) is None
+
+@responses.activate
+def test_deploy():
+    mock_get_root()
+    responses.add(
+        responses.POST, projects.SERVER_URL+'/deploy',
+        json='your project has bee deployed', status=200
+    )
+    result = runner.invoke(cli.deploy)
+    assert result.output == 'your project has bee deployed\n'
+
+@responses.activate
+def test_bad_deploy():
+    mock_get_root()
+    responses.add(
+        responses.POST, projects.SERVER_URL+'/deploy',
+        json={'error': 'Failed to build docker image'}, status=500
+    )
+    result = runner.invoke(cli.deploy)
+    print(result.exception.args)
+    assert result.exception.args == ('Failed to build docker image',)
