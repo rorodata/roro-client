@@ -6,7 +6,7 @@ from netrc import netrc
 from tabulate import tabulate
 from . import projects
 from . import helpers as h
-from .projects import login as roro_login
+from .projects import Project, login as roro_login
 
 from firefly.client import FireflyError
 from requests import ConnectionError
@@ -61,7 +61,9 @@ def create_netrc_if_not_exists():
 def create(project):
     """Creates a new Project.
     """
-    pass
+    p = Project(project)
+    p.create()
+    print("Created project:", project)
 
 @cli.command()
 def deploy():
@@ -93,26 +95,40 @@ def ps_restart(name):
     pass
 
 @cli.command()
-def env():
-    """Lists all environment variables associated with this project.
+def config():
+    """Lists all config vars of this project.
     """
-    pass
+    project = projects.current_project()
+    config = project.get_config()
+    print("=== {} Config Vars".format(project.name))
+    for k, v in config.items():
+        print("{}: {}".format(k, v))
 
-@cli.command(name='env:set')
-@click.argument('name')
-@click.argument('value')
-def env_set(name, value):
-    """Lists all environment variables associated with this project.
+@cli.command(name='config:set')
+@click.argument('vars', nargs=-1)
+def env_set(vars):
+    """Sets one or more the config vars.
     """
-    pass
+    project = projects.current_project()
 
-@cli.command(name='env:unset')
-@click.argument('name')
-@click.argument('value')
-def env_unset(name, value):
-    """Unsets an environment variable.
+    d = {}
+    for var in vars:
+        if "=" in var:
+            k, v = var.split("=", 1)
+            d[k] = v
+        else:
+            d[var] = ""
+
+    project.set_config(d)
+    print("Updated config vars")
+
+@cli.command(name='config:unset')
+@click.argument('names', nargs=-1)
+def env_unset(names):
+    """Unsets one or more config vars.
     """
-    pass
+    project.unset_config(names)
+    print("Updated config vars")
 
 @cli.command(context_settings={"allow_interspersed_args": False})
 @click.argument('command', nargs=-1)
