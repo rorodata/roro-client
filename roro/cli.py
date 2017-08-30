@@ -127,6 +127,7 @@ def env_set(vars):
 def env_unset(names):
     """Unsets one or more config vars.
     """
+    project = projects.current_project()
     project.unset_config(names)
     print("Updated config vars")
 
