@@ -2,7 +2,7 @@ import os
 import yaml
 import firefly
 
-SERVER_URL = "https://api.rorodata.com/"
+SERVER_URL = "https://api.rorocloud.io/"
 
 def login(email, password):
     client = firefly.Client(SERVER_URL)
