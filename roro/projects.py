@@ -37,6 +37,14 @@ class Project:
     def unset_config(self, names):
         return self.client.unset_config(project=self.name, names=names)
 
+    def list_volumes(self):
+        volumes = self.client.volumes(project=self.name)
+        return [volume['volume'] for volume in volumes]
+
+    def add_volume(self, volume_name):
+        volume =  self.client.add_volume(project=self.name, name=volume_name)
+        return volume['volume']
+
 def current_project():
     if os.path.exists("roro.yml"):
         d = yaml.safe_load(open("roro.yml"))

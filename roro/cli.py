@@ -167,14 +167,21 @@ def project_logs(project):
 def volumes():
     """Lists all the volumes.
     """
-    pass
+    project = projects.current_project()
+    volumes = project.list_volumes()
+    if not volumes:
+        click.echo('No volumes are attached to {}'.format(project.name))
+    for volume in  project.list_volumes():
+        click.echo(volume)
 
-@cli.command(name='volumes:new')
+@cli.command(name='volumes:add')
 @click.argument('volume_name')
 def create_volume(volume_name):
     """Creates a new volume.
     """
-    pass
+    project = projects.current_project()
+    volume = project.add_volume(volume_name)
+    click.echo('Volume {} added to the project {}'.format(volume, project.name))
 
 @cli.command(name='volumes:remove')
 @click.argument('volume_name')
