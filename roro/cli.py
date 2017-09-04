@@ -1,5 +1,7 @@
 import os
 import stat
+import time
+import itertools
 import click
 import datetime
 from netrc import netrc
@@ -145,17 +147,58 @@ def run_notebook():
     """
     project = projects.current_project()
     job = project.run_notebook()
-    print("Started new job", job["jobid"])
+    _logs(project, job["jobid"], follow=True, end_marker="-" * 40)
 
 @cli.command()
 @click.argument('jobid')
-def logs(jobid):
+@click.option('-s', '--show-timestamp', default=False, is_flag=True)
+@click.option('-f', '--follow', default=False, is_flag=True)
+def logs(jobid, show_timestamp, follow):
     """Shows all the logs of the project.
     """
     project = projects.current_project()
-    logs = project.logs(jobid)
+    _logs(project, jobid, follow, show_timestamp)
+
+def _logs(project, job_id, follow=False, show_timestamp=False, end_marker=None):
+    """Shows the logs of job_id.
+    """
+    def get_logs(job_id, follow=False):
+        if follow:
+            seen = 0
+            while True:
+                logs = project.logs(job_id)
+                for log in logs[seen:]:
+                    yield log
+                seen = len(logs)
+                job = project.ps(job_id)
+                if job['status'] in ['success', 'cancelled', 'failed']:
+                    break
+                time.sleep(0.5)
+        else:
+            logs = project.logs(job_id)
+            for log in logs:
+                yield log
+
+
+    logs = get_logs(job_id, follow)
+    if end_marker:
+        logs = itertools.takewhile(lambda log: not log['message'].startswith(end_marker), logs)
+
+    _display_logs(logs, show_timestamp=show_timestamp)
+
+def _display_logs(logs, show_timestamp=False):
+    def parse_time(timestamp):
+        t = datetime.datetime.fromtimestamp(timestamp//1000)
+        return t.isoformat()
+
+    if show_timestamp:
+        log_pattern = "[{timestamp}] {message}"
+    else:
+        log_pattern = "{message}"
+
     for line in logs:
-        print(line)
+        line['timestamp'] = parse_time(line['timestamp'])
+        click.echo(log_pattern.format(**line))
 
 @cli.command()
 @click.argument('project')
