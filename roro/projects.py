@@ -21,6 +21,10 @@ class Project:
         job = self.client.run(project=self.name, command=command)
         return job
 
+    def run_notebook(self):
+        job = self.client.run_notebook(project=self.name)
+        return job
+
     def ps(self):
         return self.client.ps(project=self.name)
 

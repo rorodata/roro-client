@@ -139,11 +139,13 @@ def run(command):
     job = project.run(command)
     print("Started new job", job["jobid"])
 
-@cli.command(name='run:notebook')
+@cli.command(name='run:notebook', context_settings={"allow_interspersed_args": False})
 def run_notebook():
     """Runs a notebook.
     """
-    pass
+    project = projects.current_project()
+    job = project.run_notebook()
+    print("Started new job", job["jobid"])
 
 @cli.command()
 @click.argument('jobid')
