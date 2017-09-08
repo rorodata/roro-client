@@ -160,6 +160,14 @@ def run_notebook():
 
 @cli.command()
 @click.argument('jobid')
+def stop(jobid):
+    """Stops a service with reference to jobid
+    """
+    project = projects.current_project()
+    project.stop(jobid)
+
+@cli.command()
+@click.argument('jobid')
 @click.option('-s', '--show-timestamp', default=False, is_flag=True)
 @click.option('-f', '--follow', default=False, is_flag=True)
 def logs(jobid, show_timestamp, follow):

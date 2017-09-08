@@ -22,6 +22,9 @@ class Project:
         job = self.client.run(project=self.name, command=command)
         return job
 
+    def stop(self, jobid):
+        self.client.stop(project=self.name, jobid=jobid)
+
     def run_notebook(self):
         job = self.client.run_notebook(project=self.name)
         return job
