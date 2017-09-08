@@ -1,6 +1,7 @@
 import os
 import yaml
 import firefly
+from . import models
 
 SERVER_URL = "https://api.rorocloud.io/"
 
@@ -49,9 +50,25 @@ class Project:
         volume =  self.client.add_volume(project=self.name, name=volume_name)
         return volume['volume']
 
+    def get_model_repository(self, name):
+        """Returns the ModelRepository from this project with given name.
+        """
+        return models.get_model_repository(project=self.name, name=name)
+
+    @staticmethod
+    def find_all():
+        client = firefly.Client(SERVER_URL)
+        projects = client.projects()
+        return [Project(p['name'], p.get('runtime')) for p in projects]
+
 def current_project():
     if os.path.exists("roro.yml"):
         d = yaml.safe_load(open("roro.yml"))
         return Project(d['project'], d.get('runtime', 'python36'))
     else:
         raise Exception("Unable to find roro.yml")
+
+get_current_project = current_project
+
+def list_projects():
+    return Project.find_all()

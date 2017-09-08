@@ -58,6 +58,14 @@ def create_netrc_if_not_exists():
         os.chmod(netrc_file, stat.S_IREAD|stat.S_IWRITE)
     return netrc_file
 
+@cli.command(name="projects")
+def _projects():
+    """Lists all the projects.
+    """
+    projects = Project.find_all()
+    for p in projects:
+        print(p.name)
+
 @cli.command()
 @click.argument('project')
 def create(project):
