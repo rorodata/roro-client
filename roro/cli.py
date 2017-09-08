@@ -118,16 +118,16 @@ def deploy():
 @cli.command()
 @click.argument('src', type=PathType())
 @click.argument('dest', type=PathType())
-def put(src, dest):
+def cp(src, dest):
     """Copy files to and from volumes to you local disk.
 
     Example:
 
-        $ roro put volume:/dataset.txt ./dataset.txt
+        $ roro cp volume:/dataset.txt ./dataset.txt
 
         downloads the file dataset.txt from the server
 
-        $ roro put ./dataset.txt volume:/dataset.txt
+        $ roro cp ./dataset.txt volume:/dataset.txt
 
         uploads dataset.txt to the server
     """
