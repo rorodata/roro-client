@@ -13,6 +13,30 @@ from .projects import Project, login as roro_login
 from firefly.client import FireflyError
 from requests import ConnectionError
 
+class PathType(click.ParamType):
+    name = 'path'
+
+    def convert(self, value, param, ctx):
+        return Path(value)
+
+class Path:
+    def __init__(self, path):
+        self._path = path
+
+    def is_volume(self):
+        return ':' in self._path
+
+    @property
+    def volume(self):
+        return self._path.split(':')[0]
+
+    @property
+    def path(self):
+        if self.is_volume():
+            return self._path.split(':')[1]
+        else:
+            return self._path
+
 class CatchAllExceptions(click.Group):
     def __call__(self, *args, **kwargs):
         try:
@@ -90,6 +114,27 @@ def deploy():
     project = projects.current_project()
     response = project.deploy()
     click.echo(response)
+
+@cli.command()
+@click.argument('src', type=PathType())
+@click.argument('dest', type=PathType())
+def put(src, dest):
+    """Copy files to and from volumes to you local disk.
+
+    Example:
+
+        $ roro put volume:/dataset.txt ./dataset.txt
+
+        downloads the file dataset.txt from the server
+
+        $ roro put ./dataset.txt volume:/dataset.txt
+
+        uploads dataset.txt to the server
+    """
+    if src.is_volume() is dest.is_volume():
+        raise Exception('One of the arguments has to be a volume, other a local path')
+    project = projects.current_project()
+    project.put(src, dest)
 
 @cli.command()
 def ps():

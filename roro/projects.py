@@ -77,6 +77,38 @@ class Project:
         """
         return models.get_model_repository(project=self.name, name=name)
 
+    def put(self, src, dest):
+        if src.is_volume():
+            self._get_file(src, dest)
+        else:
+            self._put_file(src, dest)
+
+    def _get_file(self, src, dest):
+        fileobj = self.client.get_file(
+            project=self.name,
+            volume=src.volume,
+            path=src.path
+        )
+        tmp_path = dest.path+'.tmp'
+        dirname = os.path.dirname(tmp_path)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        with open(tmp_path, 'wb') as tmp:
+            shutil.copyfileobj(fileobj, tmp)
+            shutil.move(tmp_path, dest.path)
+
+    def _put_file(self, src, dest):
+        if not os.path.exists(src.path):
+            raise FileNotFoundError('File {} does not exist'.format(src.path))
+        with open(src.path, 'rb') as fileobj:
+            self.client.put_file(
+                project=self.name,
+                fileobj=fileobj,
+                volume=dest.volume,
+                path=dest.path,
+                size=os.path.getsize(src.path)
+            )
+
     @staticmethod
     def find_all():
         client = firefly.Client(SERVER_URL)
