@@ -1,12 +1,14 @@
 import os
 import stat
+import time
+import itertools
 import click
 import datetime
 from netrc import netrc
 from tabulate import tabulate
 from . import projects
 from . import helpers as h
-from .projects import login as roro_login
+from .projects import Project, login as roro_login
 
 from firefly.client import FireflyError
 from requests import ConnectionError
@@ -63,12 +65,22 @@ def create_netrc_if_not_exists():
         os.chmod(netrc_file, stat.S_IREAD|stat.S_IWRITE)
     return netrc_file
 
+@cli.command(name="projects")
+def _projects():
+    """Lists all the projects.
+    """
+    projects = Project.find_all()
+    for p in projects:
+        print(p.name)
+
 @cli.command()
 @click.argument('project')
 def create(project):
     """Creates a new Project.
     """
-    pass
+    p = Project(project)
+    p.create()
+    print("Created project:", project)
 
 @cli.command()
 def deploy():
@@ -103,26 +115,41 @@ def ps_restart(name):
     pass
 
 @cli.command()
-def env():
-    """Lists all environment variables associated with this project.
+def config():
+    """Lists all config vars of this project.
     """
-    pass
+    project = projects.current_project()
+    config = project.get_config()
+    print("=== {} Config Vars".format(project.name))
+    for k, v in config.items():
+        print("{}: {}".format(k, v))
 
-@cli.command(name='env:set')
-@click.argument('name')
-@click.argument('value')
-def env_set(name, value):
-    """Lists all environment variables associated with this project.
+@cli.command(name='config:set')
+@click.argument('vars', nargs=-1)
+def env_set(vars):
+    """Sets one or more the config vars.
     """
-    pass
+    project = projects.current_project()
 
-@cli.command(name='env:unset')
-@click.argument('name')
-@click.argument('value')
-def env_unset(name, value):
-    """Unsets an environment variable.
+    d = {}
+    for var in vars:
+        if "=" in var:
+            k, v = var.split("=", 1)
+            d[k] = v
+        else:
+            d[var] = ""
+
+    project.set_config(d)
+    print("Updated config vars")
+
+@cli.command(name='config:unset')
+@click.argument('names', nargs=-1)
+def env_unset(names):
+    """Unsets one or more config vars.
     """
-    pass
+    project = projects.current_project()
+    project.unset_config(names)
+    print("Updated config vars")
 
 @cli.command(context_settings={"allow_interspersed_args": False})
 @click.argument('command', nargs=-1)
@@ -133,21 +160,64 @@ def run(command):
     job = project.run(command)
     print("Started new job", job["jobid"])
 
-@cli.command(name='run:notebook')
+@cli.command(name='run:notebook', context_settings={"allow_interspersed_args": False})
 def run_notebook():
     """Runs a notebook.
     """
-    pass
+    project = projects.current_project()
+    job = project.run_notebook()
+    _logs(project, job["jobid"], follow=True, end_marker="-" * 40)
 
 @cli.command()
 @click.argument('jobid')
-def logs(jobid):
+@click.option('-s', '--show-timestamp', default=False, is_flag=True)
+@click.option('-f', '--follow', default=False, is_flag=True)
+def logs(jobid, show_timestamp, follow):
     """Shows all the logs of the project.
     """
     project = projects.current_project()
-    logs = project.logs(jobid)
+    _logs(project, jobid, follow, show_timestamp)
+
+def _logs(project, job_id, follow=False, show_timestamp=False, end_marker=None):
+    """Shows the logs of job_id.
+    """
+    def get_logs(job_id, follow=False):
+        if follow:
+            seen = 0
+            while True:
+                logs = project.logs(job_id)
+                for log in logs[seen:]:
+                    yield log
+                seen = len(logs)
+                job = project.ps(job_id)
+                if job['status'] in ['success', 'cancelled', 'failed']:
+                    break
+                time.sleep(0.5)
+        else:
+            logs = project.logs(job_id)
+            for log in logs:
+                yield log
+
+
+    logs = get_logs(job_id, follow)
+    if end_marker:
+        logs = itertools.takewhile(lambda log: not log['message'].startswith(end_marker), logs)
+
+    _display_logs(logs, show_timestamp=show_timestamp)
+
+def _display_logs(logs, show_timestamp=False):
+    def parse_time(timestamp):
+        t = datetime.datetime.fromtimestamp(timestamp//1000)
+        return t.isoformat()
+
+    if show_timestamp:
+        log_pattern = "[{timestamp}] {message}"
+    else:
+        log_pattern = "{message}"
+
     for line in logs:
-        print(line)
+        line['timestamp'] = parse_time(line['timestamp'])
+        click.echo(log_pattern.format(**line))
 
 @cli.command()
 @click.argument('project')
@@ -160,14 +230,21 @@ def project_logs(project):
 def volumes():
     """Lists all the volumes.
     """
-    pass
+    project = projects.current_project()
+    volumes = project.list_volumes()
+    if not volumes:
+        click.echo('No volumes are attached to {}'.format(project.name))
+    for volume in  project.list_volumes():
+        click.echo(volume)
 
-@cli.command(name='volumes:new')
+@cli.command(name='volumes:add')
 @click.argument('volume_name')
 def create_volume(volume_name):
     """Creates a new volume.
     """
-    pass
+    project = projects.current_project()
+    volume = project.add_volume(volume_name)
+    click.echo('Volume {} added to the project {}'.format(volume, project.name))
 
 @cli.command(name='volumes:remove')
 @click.argument('volume_name')

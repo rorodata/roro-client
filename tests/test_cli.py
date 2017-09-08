@@ -1,4 +1,6 @@
+import os
 import responses
+import yaml
 
 from roro import cli
 from roro import projects
@@ -18,6 +20,9 @@ def mock_get_root():
 
 def setup_function(function):
     create_netrc_if_not_exists()
+    with open('roro.yml', 'w') as f:
+        content = yaml.safe_dump({'project': 'credit-risk', 'runtime': 'python:3'})
+        f.write(content)
 
 def teardown_function(function):
     netrc_file = create_netrc_if_not_exists()
@@ -27,6 +32,7 @@ def teardown_function(function):
         rc.hosts.pop(projects.SERVER_URL)
     with open(netrc_file, 'w') as f:
         f.write(str(rc))
+    os.remove('roro.yml')
 
 @responses.activate
 def test_login():
@@ -77,3 +83,34 @@ def test_bad_deploy():
     result = runner.invoke(cli.deploy)
     print(result.exception.args)
     assert result.exception.args == ('Failed to build docker image',)
+
+@responses.activate
+def test_volumes():
+    mock_get_root()
+    message = [
+        {
+            'project': 'test-project',
+            'volume': 'volume-1'
+        },
+        {
+            'project': 'test-project',
+            'volume': 'volume-2'
+        }
+    ]
+    responses.add(
+        responses.POST, projects.SERVER_URL+'/volumes',
+        json=message, status=200
+    )
+    result = runner.invoke(cli.volumes)
+    assert result.output == 'volume-1\nvolume-2\n'
+
+@responses.activate
+def test_add_volume():
+    mock_get_root()
+    message = {'project': 'project', 'volume': 'volume-1'}
+    responses.add(
+        responses.POST, projects.SERVER_URL+'/add_volume',
+        json=message, status=200
+    )
+    result = runner.invoke(cli.create_volume, args=['new volume'])
+    assert result.output == 'Volume volume-1 added to the project credit-risk\n'
