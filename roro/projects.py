@@ -21,8 +21,12 @@ class Project:
         job = self.client.run(project=self.name, command=command)
         return job
 
-    def ps(self):
-        return self.client.ps(project=self.name)
+    def run_notebook(self):
+        job = self.client.run_notebook(project=self.name)
+        return job
+
+    def ps(self, jobid=None):
+        return self.client.ps(project=self.name, jobid=jobid)
 
     def logs(self, jobid):
         return self.client.logs(project=self.name, jobid=jobid)
