@@ -21,6 +21,9 @@ class Project:
         job = self.client.run(project=self.name, command=command)
         return job
 
+    def stop(self, jobid):
+        self.client.stop(project=self.name, jobid=jobid)
+
     def ps(self):
         return self.client.ps(project=self.name)
 

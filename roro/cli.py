@@ -148,6 +148,14 @@ def run_notebook():
 
 @cli.command()
 @click.argument('jobid')
+def stop(jobid):
+    """Stops a service with reference to jobid
+    """
+    project = projects.current_project()
+    project.stop(jobid)
+
+@cli.command()
+@click.argument('jobid')
 def logs(jobid):
     """Shows all the logs of the project.
     """
