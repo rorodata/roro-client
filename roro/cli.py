@@ -13,7 +13,14 @@ from .projects import Project, login as roro_login
 from firefly.client import FireflyError
 from requests import ConnectionError
 
-@click.group()
+class CatchAllExceptions(click.Group):
+    def __call__(self, *args, **kwargs):
+        try:
+            return self.main(*args, **kwargs)
+        except Exception as exc:
+            click.echo('ERROR %s' % exc)
+
+@click.group(cls=CatchAllExceptions)
 def cli():
     pass
 
@@ -79,7 +86,10 @@ def create(project):
 def deploy():
     """Pushes the local changes to the cloud and restarts all the services.
     """
-    pass
+    # TODO: validate credentials
+    project = projects.current_project()
+    response = project.deploy()
+    click.echo(response)
 
 @cli.command()
 def ps():
