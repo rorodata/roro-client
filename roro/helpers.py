@@ -1,4 +1,5 @@
 import datetime
+import urllib
 
 
 def parse_time(timestr):
@@ -118,3 +119,8 @@ def truncate(text, width):
     if len(text) > width:
         text = text[:width-3] + "..."
     return text
+
+def get_host_name(url):
+    host = urllib.parse.urlparse(url).netloc
+    host_name = host.split(':')[0]
+    return host_name

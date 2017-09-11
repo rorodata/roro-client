@@ -5,6 +5,7 @@ import yaml
 from roro import cli
 from roro import projects
 from roro.cli import create_netrc_if_not_exists
+from roro.helpers import get_host_name
 from netrc import netrc
 
 from click.testing import CliRunner
@@ -28,8 +29,9 @@ def teardown_function(function):
     netrc_file = create_netrc_if_not_exists()
     rc = netrc()
     cli._fix_netrc(rc)
-    if rc.hosts.get(projects.SERVER_URL):
-        rc.hosts.pop(projects.SERVER_URL)
+    host_name = get_host_name(projects.SERVER_URL)
+    if rc.hosts.get(host_name):
+        rc.hosts.pop(host_name)
     with open(netrc_file, 'w') as f:
         f.write(str(rc))
     os.remove('roro.yml')
@@ -46,7 +48,8 @@ def test_login():
     rc = netrc()
     # this assert is a little off because of the issue mentioned
     # in roro/cli.py#44
-    assert rc.hosts[projects.SERVER_URL] == (
+    host_name = get_host_name(projects.SERVER_URL)
+    assert rc.hosts[host_name] == (
         "'user@test.com'", None, "'auth_token'"
     )
 

@@ -4,10 +4,12 @@ import time
 import itertools
 import click
 import datetime
+
 from netrc import netrc
 from tabulate import tabulate
 from . import projects
 from . import helpers as h
+from .helpers import get_host_name
 from .projects import Project, login as roro_login
 from .path import Path
 
@@ -43,7 +45,8 @@ def login(email, password):
         rc = netrc()
         _fix_netrc(rc)
         with open(netrc_file, 'w') as f:
-            rc.hosts[projects.SERVER_URL] = (email, None, token)
+            host_name = get_host_name(projects.SERVER_URL)
+            rc.hosts[host_name] = (email, None, token)
             f.write(str(rc))
     except ConnectionError:
         click.echo('unable to connect to the server, try again later')
