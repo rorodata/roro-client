@@ -84,15 +84,15 @@ class Project:
             self._put_file(src, dest)
 
     def _get_file(self, src, dest):
+        dirname = os.path.dirname(dest.path)
+        if not os.path.exists(dirname):
+            raise FileNotFoundError('Directory {} does not exist'.format(src.path))
         fileobj = self.client.get_file(
             project=self.name,
             volume=src.volume,
             path=src.path
         )
         tmp_path = dest.path+'.tmp'
-        dirname = os.path.dirname(tmp_path)
-        if not os.path.exists(dirname):
-            os.makedirs(dirname)
         with open(tmp_path, 'wb') as tmp:
             shutil.copyfileobj(fileobj, tmp)
             shutil.move(tmp_path, dest.path)
