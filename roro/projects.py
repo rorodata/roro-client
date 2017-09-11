@@ -77,36 +77,28 @@ class Project:
         """
         return models.get_model_repository(project=self.name, name=name)
 
-    def put(self, src, dest):
+    def copy(self, src, dest):
         if src.is_volume():
             self._get_file(src, dest)
         else:
             self._put_file(src, dest)
 
     def _get_file(self, src, dest):
-        dirname = os.path.dirname(dest.path)
-        if not os.path.exists(dirname):
-            raise FileNotFoundError('Directory {} does not exist'.format(src.path))
         fileobj = self.client.get_file(
             project=self.name,
             volume=src.volume,
             path=src.path
         )
-        tmp_path = dest.path+'.tmp'
-        with open(tmp_path, 'wb') as tmp:
-            shutil.copyfileobj(fileobj, tmp)
-            shutil.move(tmp_path, dest.path)
+        dest.safe_write(fileobj)
 
     def _put_file(self, src, dest):
-        if not os.path.exists(src.path):
-            raise FileNotFoundError('File {} does not exist'.format(src.path))
-        with open(src.path, 'rb') as fileobj:
+        with src.open('rb') as fileobj:
             self.client.put_file(
                 project=self.name,
                 fileobj=fileobj,
                 volume=dest.volume,
                 path=dest.path,
-                size=os.path.getsize(src.path)
+                size=src.size
             )
 
     @staticmethod

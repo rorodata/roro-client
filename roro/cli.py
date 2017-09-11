@@ -9,6 +9,7 @@ from tabulate import tabulate
 from . import projects
 from . import helpers as h
 from .projects import Project, login as roro_login
+from .path import Path
 
 from firefly.client import FireflyError
 from requests import ConnectionError
@@ -18,24 +19,6 @@ class PathType(click.ParamType):
 
     def convert(self, value, param, ctx):
         return Path(value)
-
-class Path:
-    def __init__(self, path):
-        self._path = path
-
-    def is_volume(self):
-        return ':' in self._path
-
-    @property
-    def volume(self):
-        return self._path.split(':')[0]
-
-    @property
-    def path(self):
-        if self.is_volume():
-            return self._path.split(':')[1]
-        else:
-            return self._path
 
 class CatchAllExceptions(click.Group):
     def __call__(self, *args, **kwargs):
@@ -134,7 +117,7 @@ def cp(src, dest):
     if src.is_volume() is dest.is_volume():
         raise Exception('One of the arguments has to be a volume, other a local path')
     project = projects.current_project()
-    project.put(src, dest)
+    project.copy(src, dest)
 
 @cli.command()
 def ps():
