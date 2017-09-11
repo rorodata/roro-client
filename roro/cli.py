@@ -9,9 +9,16 @@ from tabulate import tabulate
 from . import projects
 from . import helpers as h
 from .projects import Project, login as roro_login
+from .path import Path
 
 from firefly.client import FireflyError
 from requests import ConnectionError
+
+class PathType(click.ParamType):
+    name = 'path'
+
+    def convert(self, value, param, ctx):
+        return Path(value)
 
 class CatchAllExceptions(click.Group):
     def __call__(self, *args, **kwargs):
@@ -90,6 +97,27 @@ def deploy():
     project = projects.current_project()
     response = project.deploy()
     click.echo(response)
+
+@cli.command()
+@click.argument('src', type=PathType())
+@click.argument('dest', type=PathType())
+def cp(src, dest):
+    """Copy files to and from volumes to you local disk.
+
+    Example:
+
+        $ roro cp volume:/dataset.txt ./dataset.txt
+
+        downloads the file dataset.txt from the server
+
+        $ roro cp ./dataset.txt volume:/dataset.txt
+
+        uploads dataset.txt to the server
+    """
+    if src.is_volume() is dest.is_volume():
+        raise Exception('One of the arguments has to be a volume, other a local path')
+    project = projects.current_project()
+    project.copy(src, dest)
 
 @cli.command()
 def ps():

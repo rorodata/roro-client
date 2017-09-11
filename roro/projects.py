@@ -77,6 +77,30 @@ class Project:
         """
         return models.get_model_repository(project=self.name, name=name)
 
+    def copy(self, src, dest):
+        if src.is_volume():
+            self._get_file(src, dest)
+        else:
+            self._put_file(src, dest)
+
+    def _get_file(self, src, dest):
+        fileobj = self.client.get_file(
+            project=self.name,
+            volume=src.volume,
+            path=src.path
+        )
+        dest.safe_write(fileobj)
+
+    def _put_file(self, src, dest):
+        with src.open('rb') as fileobj:
+            self.client.put_file(
+                project=self.name,
+                fileobj=fileobj,
+                volume=dest.volume,
+                path=dest.path,
+                size=src.size
+            )
+
     @staticmethod
     def find_all():
         client = firefly.Client(SERVER_URL)
