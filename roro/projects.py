@@ -3,6 +3,7 @@ import shutil
 import yaml
 import firefly
 from . import models
+from click import ClickException
 
 SERVER_URL = "https://api.rorocloud.io/"
 
@@ -112,7 +113,7 @@ def current_project():
         d = yaml.safe_load(open("roro.yml"))
         return Project(d['project'], d.get('runtime', 'python36'))
     else:
-        raise Exception("Unable to find roro.yml")
+        raise ClickException("Unable to find roro.yml")
 
 get_current_project = current_project
 
