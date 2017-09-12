@@ -12,6 +12,7 @@ from . import helpers as h
 from .helpers import get_host_name
 from .projects import Project, login as roro_login
 from .path import Path
+from click import ClickException
 
 from firefly.client import FireflyError
 from requests import ConnectionError
@@ -292,6 +293,18 @@ def remove_volume(volume_name):
     """Removes a new volume.
     """
     pass
+
+@cli.command(name='volume:ls')
+@click.argument('path', type=PathType())
+def ls_volume(path):
+    """Lists you files in a volume.
+    """
+    if not path.is_volume():
+        raise ClickException('Path argument should be a volume')
+    project = projects.current_project()
+    stat = project.ls(path)
+    rows = [[item['mode'], item['size'], item['name']] for item in stat]
+    click.echo(tabulate(rows, tablefmt='plain'))
 
 def main_dev():
     projects.SERVER_URL = "http://api.local.rorodata.com:8080/"
