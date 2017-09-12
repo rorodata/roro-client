@@ -137,7 +137,7 @@ def ps(all):
         total_time = datetime.timedelta(total_time.days, total_time.seconds)
         command = " ".join(job["details"]["command"])
         rows.append([job['jobid'], job['status'], h.datestr(start), str(total_time), job['instance_type'], h.truncate(command, 50)])
-    print(tabulate(rows, headers=['JOBID', 'STATUS', 'WHEN', 'TIME', 'INSTANCE TYPE', 'CMD']))
+    print(tabulate(rows, headers=['JOBID', 'STATUS', 'WHEN', 'TIME', 'INSTANCE TYPE', 'CMD'], disable_numparse=True))
 
 @cli.command(name='ps:restart')
 @click.argument('name')
