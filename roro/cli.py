@@ -123,11 +123,12 @@ def cp(src, dest):
     project.copy(src, dest)
 
 @cli.command()
-def ps():
+@click.option('-a', '--all', default=False, is_flag=True)
+def ps(all):
     """Shows all the processes running in this project.
     """
     project = projects.current_project()
-    jobs = project.ps()
+    jobs = project.ps(all=all)
     rows = []
     for job in jobs:
         start = h.parse_time(job['start_time'])
