@@ -5,7 +5,7 @@ import firefly
 from . import models
 from click import ClickException
 
-SERVER_URL = "https://api.rorocloud.io/"
+SERVER_URL = "https://api.rorodata.com/"
 
 def login(email, password):
     client = firefly.Client(SERVER_URL)
