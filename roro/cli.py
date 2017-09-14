@@ -295,12 +295,22 @@ def remove_volume(volume_name):
     pass
 
 @cli.command(name='volume:ls')
-@click.argument('path', type=PathType())
+@click.argument('path')
 def ls_volume(path):
     """Lists you files in a volume.
+
+    Example:
+
+        \b
+        roro volume:ls <volume_name>
+        lists all files in volume "volume_name"
+
+        \b
+        roro volume:ls <volume_name:dir>
+        lists all filies at directory "dir" in volume "volume"
     """
-    if not path.is_volume():
-        raise ClickException('Path argument should be a volume')
+    path = path+':' if ':' not in path else path
+    path = Path(path)
     project = projects.current_project()
     stat = project.ls(path)
     rows = [[item['mode'], item['size'], item['name']] for item in stat]
