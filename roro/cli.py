@@ -4,7 +4,6 @@ import time
 import itertools
 import click
 import datetime
-import re
 import sys
 
 from netrc import netrc
