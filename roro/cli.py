@@ -18,6 +18,8 @@ from .path import Path
 from firefly.client import FireflyError
 from requests import ConnectionError
 
+PY2 = (sys.version_info.major == 2)
+
 class PathType(click.ParamType):
     name = 'path'
 
@@ -48,6 +50,9 @@ def login(email, password):
         _fix_netrc(rc)
         with open(netrc_file, 'w') as f:
             host_name = get_host_name(projects.SERVER_URL)
+            if PY2:
+                email = email.encode('utf-8')
+                token = token.encode('utf-8')
             rc.hosts[host_name] = (email, None, token)
             f.write(str(rc))
     except ConnectionError:
