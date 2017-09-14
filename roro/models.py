@@ -81,6 +81,24 @@ class ModelImage:
         print("    {}".format(comment), file=f)
         return f.getvalue()
 
+    def get_details(self):
+        keys = ["Model-ID", "Model-Name", "Model-Version", "Date"]
+        lower_keys = {k.lower(): i for i, k in enumerate(keys)}
+        items = sorted(self._metadata.items(), key=lambda kv: (lower_keys.get(kv[0].lower(), 100), kv[0]))
+
+        special_keys = ["comment", "tag"]
+        items = [(k, v) for k, v in items if k.lower() not in special_keys]
+
+        f = io.StringIO()
+        for k, v in items:
+            print("{}: {}".format(k, v), file=f)
+        print(file=f)
+
+        comment = self._indent(self.comment)
+        print("    {}".format(comment), file=f)
+        return f.getvalue()
+
+
     def _indent(self, text):
         text = text or ""
         return re.compile("^", re.M).sub("    ", text)
@@ -114,3 +132,6 @@ class ModelImage:
 
     def __repr__(self):
         return "<ModelImage {}/{}@{}>".format(self._repo.project, self._repo.name, self.version)
+
+    def __str__(self):
+        return self.get_details()

@@ -76,12 +76,16 @@ class Project:
     def get_model_repository(self, name):
         """Returns the ModelRepository from this project with given name.
         """
-        return models.get_model_repository(project=self.name, name=name)
+        return models.get_model_repository(client=self.client, project=self.name, name=name)
 
     def list_model_repositories(self):
         """Returns a list of all the ModelRepository objects present in this project.
         """
         return models.list_model_repositories(client=self.client, project=self.name)
+
+    def get_model_activity(self, repo=None):
+        response = self.client.get_activity(project=self.name, name=repo)
+        return [models.ModelImage(repo=self, metadata=x) for x in response]
 
     def copy(self, src, dest):
         if src.is_volume():

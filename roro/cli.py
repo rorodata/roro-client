@@ -4,6 +4,8 @@ import time
 import itertools
 import click
 import datetime
+import re
+import sys
 
 from netrc import netrc
 from tabulate import tabulate
@@ -292,6 +294,44 @@ def remove_volume(volume_name):
     """Removes a new volume.
     """
     pass
+
+@cli.command()
+def models():
+    project = projects.current_project()
+    for repo in project.list_model_repositories():
+        print(repo.name)
+
+@cli.command(name="models:log")
+@click.argument('name', required=False)
+def models_log(name=None):
+    project = projects.current_project()
+    images = project.get_model_activity(repo=name)
+    for im in images:
+        print(im.get_summary())
+
+@cli.command(name="models:show")
+@click.argument('modelref')
+def models_show(modelref):
+    project = projects.current_project()
+
+    model = modelref
+    tag = None
+    version = None
+
+    if ":" in modelref:
+        model, version_or_tag = modelref.split(":", 1)
+        if version_or_tag.isnumeric():
+            version = int(version_or_tag)
+        else:
+            tag = version_or_tag
+
+    repo = project.get_model_repository(model)
+    image = repo and repo.get_model_image(version=version, tag=tag)
+    if not image:
+        click.echo("Invalid model reference {!r}".format(model))
+        sys.exit(1)
+
+    print(image)
 
 def main_dev():
     projects.SERVER_URL = "http://api.local.rorodata.com:8080/"
