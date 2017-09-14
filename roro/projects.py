@@ -78,6 +78,11 @@ class Project:
         """
         return models.get_model_repository(project=self.name, name=name)
 
+    def list_model_repositories(self):
+        """Returns a list of all the ModelRepository objects present in this project.
+        """
+        return models.list_model_repositories(client=self.client, project=self.name)
+
     def copy(self, src, dest):
         if src.is_volume():
             self._get_file(src, dest)
@@ -107,6 +112,9 @@ class Project:
         client = firefly.Client(SERVER_URL)
         projects = client.projects()
         return [Project(p['name'], p.get('runtime')) for p in projects]
+
+    def __repr__(self):
+        return "<Project {}>".format(self.name)
 
 def current_project():
     if os.path.exists("roro.yml"):
