@@ -16,14 +16,27 @@ class Path:
     def open(self, *args, **kwargs):
         return self._path.open(*args, **kwargs)
 
-    def safe_write(self, fileobj):
-        if not self._path.parent.exists():
-            raise FileNotFoundError('Directory {} does not exist'.format(self._path.parent.absolute))
-        p = self._path.with_suffix('.tmp')
+    def safe_write(self, fileobj, name):
+        file_path = self._get_file_path(name)
+        p = file_path.with_suffix('.tmp')
         with p.open('wb') as f:
             shutil.copyfileobj(fileobj, f)
-            p.rename(self._path)
+            p.rename(file_path)
+
+    def _get_file_path(self, name):
+        if not self._path.parent.is_dir():
+            raise FileNotFoundError('No such file or directory: {}'.format(self.name+':'+path))
+        if self._path.is_dir():
+            if not name:
+                raise Exception('Name of the file is required')
+            return self._path/pathlib.Path(name)
+        else:
+            return self._path
 
     @property
     def size(self):
         return self._path.stat().st_size
+
+    @property
+    def name(self):
+        return self._path.name

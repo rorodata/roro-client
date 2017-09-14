@@ -90,7 +90,7 @@ class Project:
             volume=src.volume,
             path=src.path
         )
-        dest.safe_write(fileobj)
+        dest.safe_write(fileobj, src.name)
 
     def _put_file(self, src, dest):
         with src.open('rb') as fileobj:
@@ -99,6 +99,7 @@ class Project:
                 fileobj=fileobj,
                 volume=dest.volume,
                 path=dest.path,
+                name=src.name,
                 size=src.size
             )
 
