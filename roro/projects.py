@@ -31,7 +31,7 @@ class Project:
         job = self.client.run_notebook(project=self.name)
         return job
 
-    def ps(self, all=False, jobid=None):
+    def ps(self, jobid=None, all=False):
         return self.client.ps(project=self.name, jobid=jobid, all=all)
 
     def logs(self, jobid):
