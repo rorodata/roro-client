@@ -5,7 +5,7 @@ import firefly
 from . import models
 from click import ClickException
 
-SERVER_URL = "https://api.rorocloud.io/"
+SERVER_URL = "https://api.rorodata.com/"
 
 def login(email, password):
     client = firefly.Client(SERVER_URL)
@@ -31,7 +31,7 @@ class Project:
         job = self.client.run_notebook(project=self.name)
         return job
 
-    def ps(self, all=False, jobid=None):
+    def ps(self, jobid=None, all=False):
         return self.client.ps(project=self.name, jobid=jobid, all=all)
 
     def ls(self, path):
@@ -83,7 +83,16 @@ class Project:
     def get_model_repository(self, name):
         """Returns the ModelRepository from this project with given name.
         """
-        return models.get_model_repository(project=self.name, name=name)
+        return models.get_model_repository(client=self.client, project=self.name, name=name)
+
+    def list_model_repositories(self):
+        """Returns a list of all the ModelRepository objects present in this project.
+        """
+        return models.list_model_repositories(client=self.client, project=self.name)
+
+    def get_model_activity(self, repo=None):
+        response = self.client.get_activity(project=self.name, name=repo)
+        return [models.ModelImage(repo=self, metadata=x) for x in response]
 
     def copy(self, src, dest):
         if src.is_volume():
@@ -114,6 +123,9 @@ class Project:
         client = firefly.Client(SERVER_URL)
         projects = client.projects()
         return [Project(p['name'], p.get('runtime')) for p in projects]
+
+    def __repr__(self):
+        return "<Project {}>".format(self.name)
 
 def current_project():
     if os.path.exists("roro.yml"):

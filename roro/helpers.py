@@ -1,5 +1,9 @@
 import datetime
-import urllib
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    # python 2
+    from urlparse import urlparse
 
 
 def parse_time(timestr):
@@ -121,6 +125,6 @@ def truncate(text, width):
     return text
 
 def get_host_name(url):
-    host = urllib.parse.urlparse(url).netloc
+    host = urlparse(url).netloc
     host_name = host.split(':')[0]
     return host_name
