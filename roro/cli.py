@@ -26,8 +26,16 @@ class CatchAllExceptions(click.Group):
     def __call__(self, *args, **kwargs):
         try:
             return self.main(*args, **kwargs)
+        except FireflyError as e:
+            if e.args and e.args[0] == "Forbidden":
+                click.echo("Unauthorized. Please login and try again.")
+                sys.exit(2)
+            else:
+                click.echo('ERROR %s' % e)
+                sys.exit(3)
         except Exception as exc:
             click.echo('ERROR %s' % exc)
+            sys.exit(3)
 
 @click.group(cls=CatchAllExceptions)
 def cli():
