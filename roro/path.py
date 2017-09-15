@@ -31,10 +31,10 @@ class Path:
         dest = self._path
         if dest.name != name:
             if not name:
-                raise Excetption('Name of the file is required when path is poiting to a dir')
+                raise Exception('Name of the file is required when path is poiting to a dir')
             dest = dest/pathlib.Path(name)
         if not dest.parent.is_dir():
-            raise FileNotFoundError('No such file or directory: {}'.format(self.name+':'+path))
+            raise FileNotFoundError('No such file or directory: {}'.format(self.name+':'+str(dest)))
         return dest
 
     @property
