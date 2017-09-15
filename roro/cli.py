@@ -328,11 +328,15 @@ def models():
 
 @cli.command(name="models:log")
 @click.argument('name', required=False)
-def models_log(name=None):
+@click.option('-a', '--all', default=False, is_flag=True, help="Show all fields")
+def models_log(name=None, all=False):
     project = projects.current_project()
     images = project.get_model_activity(repo=name)
     for im in images:
-        print(im.get_summary())
+        if all:
+            print(im)
+        else:
+            print(im.get_summary())
 
 @cli.command(name="models:show")
 @click.argument('modelref')
