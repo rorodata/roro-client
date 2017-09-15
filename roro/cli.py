@@ -298,7 +298,7 @@ def remove_volume(volume_name):
     """
     pass
 
-@cli.command(name='volume:ls')
+@cli.command(name='volumes:ls')
 @click.argument('path')
 def ls_volume(path):
     """Lists you files in a volume.
