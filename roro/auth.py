@@ -1,7 +1,6 @@
 import os
 import stat
 from netrc import netrc as _netrc
-from urllib.parse import urlparse
 import firefly
 from . import config
 from .helpers import get_host_name, PY2
@@ -19,7 +18,7 @@ def get_saved_login():
     create_netrc_if_not_exists()
     rc = netrc()
 
-    hostname = urlparse(config.SERVER_URL)[1]
+    hostname = get_host_name(config.SERVER_URL)
     if hostname in rc.hosts:
         login, _, password = rc.hosts[hostname]
         return {
