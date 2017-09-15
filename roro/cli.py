@@ -1,9 +1,11 @@
+from __future__ import print_function
 import os
 import stat
 import time
 import itertools
 import click
 import datetime
+import sys
 
 from netrc import netrc
 from tabulate import tabulate
@@ -12,9 +14,12 @@ from . import helpers as h
 from .helpers import get_host_name
 from .projects import Project, login as roro_login
 from .path import Path
+from click import ClickException
 
 from firefly.client import FireflyError
 from requests import ConnectionError
+
+PY2 = (sys.version_info.major == 2)
 
 class PathType(click.ParamType):
     name = 'path'
@@ -46,6 +51,9 @@ def login(email, password):
         _fix_netrc(rc)
         with open(netrc_file, 'w') as f:
             host_name = get_host_name(projects.SERVER_URL)
+            if PY2:
+                email = email.encode('utf-8')
+                token = token.encode('utf-8')
             rc.hosts[host_name] = (email, None, token)
             f.write(str(rc))
     except ConnectionError:
@@ -292,6 +300,66 @@ def remove_volume(volume_name):
     """Removes a new volume.
     """
     pass
+
+@cli.command(name='volume:ls')
+@click.argument('path')
+def ls_volume(path):
+    """Lists you files in a volume.
+
+    Example:
+
+        \b
+        roro volume:ls <volume_name>
+        lists all files in volume "volume_name"
+
+        \b
+        roro volume:ls <volume_name:dir>
+        lists all filies at directory "dir" in volume "volume"
+    """
+    path = path+':' if ':' not in path else path
+    path = Path(path)
+    project = projects.current_project()
+    stat = project.ls(path)
+    rows = [[item['mode'], item['size'], item['name']] for item in stat]
+    click.echo(tabulate(rows, tablefmt='plain'))
+
+@cli.command()
+def models():
+    project = projects.current_project()
+    for repo in project.list_model_repositories():
+        print(repo.name)
+
+@cli.command(name="models:log")
+@click.argument('name', required=False)
+def models_log(name=None):
+    project = projects.current_project()
+    images = project.get_model_activity(repo=name)
+    for im in images:
+        print(im.get_summary())
+
+@cli.command(name="models:show")
+@click.argument('modelref')
+def models_show(modelref):
+    project = projects.current_project()
+
+    model = modelref
+    tag = None
+    version = None
+
+    if ":" in modelref:
+        model, version_or_tag = modelref.split(":", 1)
+        if version_or_tag.isnumeric():
+            version = int(version_or_tag)
+        else:
+            tag = version_or_tag
+
+    repo = project.get_model_repository(model)
+    image = repo and repo.get_model_image(version=version, tag=tag)
+    if not image:
+        click.echo("Invalid model reference {!r}".format(model))
+        sys.exit(1)
+
+    print(image)
 
 def main_dev():
     projects.SERVER_URL = "http://api.local.rorodata.com:8080/"
