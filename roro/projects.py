@@ -7,10 +7,6 @@ from . import models, config
 from click import ClickException
 
 
-def login(email, password):
-    client = firefly.Client(config.SERVER_URL)
-    return client.login(email=email, password=password)
-
 class Project:
     def __init__(self, name, runtime=None):
         self.name = name

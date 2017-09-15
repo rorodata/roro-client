@@ -7,13 +7,13 @@ import click
 import datetime
 import sys
 
-from netrc import netrc
 from tabulate import tabulate
 from . import config
 from . import projects
 from . import helpers as h
 from .helpers import get_host_name, PY2
-from .projects import Project, login as roro_login
+from .projects import Project
+from . import auth
 from .path import Path
 
 from firefly.client import FireflyError
@@ -42,44 +42,15 @@ def cli():
 def login(email, password):
     """Login to rorodata platform.
     """
-    netrc_file = create_netrc_if_not_exists()
     try:
-        token = roro_login(email, password)
-        rc = netrc()
-        _fix_netrc(rc)
-        with open(netrc_file, 'w') as f:
-            host_name = get_host_name(config.SERVER_URL)
-            if PY2:
-                email = email.encode('utf-8')
-                token = token.encode('utf-8')
-            rc.hosts[host_name] = (email, None, token)
-            f.write(str(rc))
+        auth.login(email, password)
+        click.echo("Login successful.")
     except ConnectionError:
         click.echo('unable to connect to the server, try again later')
     except FireflyError as e:
         click.echo(e)
+        raise
 
-# this is here because of this issue
-# https://github.com/python/cpython/pull/2491
-# TODO: should be removed once it is fixed
-def _fix_netrc(rc):
-    for host in rc.hosts:
-        login, _, password = rc.hosts[host]
-        # should be safe as we use alphanumneric chars in token
-        login = login.strip("'")
-        password = password.strip("'")
-        rc.hosts[host] = (login, _, password)
-
-def create_netrc_if_not_exists():
-    prefix = '.' if os.name != 'nt' else '_'
-    netrc_file = os.path.join(os.path.expanduser('~'), prefix+'netrc')
-    # theese flags works both on windows and linux according to this stackoverflow
-    # https://stackoverflow.com/questions/27500067/chmod-issue-to-change-file-permission-using-python#27500153
-    if not os.path.exists(netrc_file):
-        with open(netrc_file, 'w'):
-            pass
-        os.chmod(netrc_file, stat.S_IREAD|stat.S_IWRITE)
-    return netrc_file
 
 @cli.command(name="projects")
 def _projects():
