@@ -11,14 +11,12 @@ from netrc import netrc
 from tabulate import tabulate
 from . import projects
 from . import helpers as h
-from .helpers import get_host_name
+from .helpers import get_host_name, PY2
 from .projects import Project, login as roro_login
 from .path import Path
 
 from firefly.client import FireflyError
 from requests import ConnectionError
-
-PY2 = (sys.version_info.major == 2)
 
 class PathType(click.ParamType):
     name = 'path'

@@ -1,5 +1,10 @@
 import shutil
 import  pathlib
+from .helpers import PY2
+
+if PY2:
+    # FileNotFoundError is not defined for Python 2
+    FileNotFoundError = IOError
 
 try:
     FileNotFoundError

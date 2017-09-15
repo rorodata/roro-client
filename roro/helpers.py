@@ -1,9 +1,13 @@
 import datetime
+import sys
+
 try:
     from urllib.parse import urlparse
 except ImportError:
     # python 2
     from urlparse import urlparse
+
+PY2 = (sys.version_info.major == 2)
 
 
 def parse_time(timestr):
