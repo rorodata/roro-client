@@ -128,7 +128,7 @@ class Project:
 def current_project():
     if os.path.exists("roro.yml"):
         d = yaml.safe_load(open("roro.yml"))
-        return Project(d['project'], d.get('runtime', 'python36'))
+        return Project(d['project'], d.get('runtime'))
     else:
         raise ClickException("Unable to find roro.yml")
 
