@@ -14,7 +14,6 @@ from . import helpers as h
 from .helpers import get_host_name
 from .projects import Project, login as roro_login
 from .path import Path
-from click import ClickException
 
 from firefly.client import FireflyError
 from requests import ConnectionError
