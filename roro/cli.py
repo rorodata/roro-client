@@ -14,6 +14,7 @@ from . import helpers as h
 from .helpers import get_host_name
 from .projects import Project, login as roro_login
 from .path import Path
+from click import ClickException
 
 from firefly.client import FireflyError
 from requests import ConnectionError
@@ -299,6 +300,28 @@ def remove_volume(volume_name):
     """Removes a new volume.
     """
     pass
+
+@cli.command(name='volume:ls')
+@click.argument('path')
+def ls_volume(path):
+    """Lists you files in a volume.
+
+    Example:
+
+        \b
+        roro volume:ls <volume_name>
+        lists all files in volume "volume_name"
+
+        \b
+        roro volume:ls <volume_name:dir>
+        lists all filies at directory "dir" in volume "volume"
+    """
+    path = path+':' if ':' not in path else path
+    path = Path(path)
+    project = projects.current_project()
+    stat = project.ls(path)
+    rows = [[item['mode'], item['size'], item['name']] for item in stat]
+    click.echo(tabulate(rows, tablefmt='plain'))
 
 @cli.command()
 def models():

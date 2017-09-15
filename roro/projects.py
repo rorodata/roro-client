@@ -34,6 +34,13 @@ class Project:
     def ps(self, jobid=None, all=False):
         return self.client.ps(project=self.name, jobid=jobid, all=all)
 
+    def ls(self, path):
+        return self.client.ls_volume(
+            project=self.name,
+            volume=path.volume,
+            path=path.path
+        )
+
     def logs(self, jobid):
         return self.client.logs(project=self.name, jobid=jobid)
         #return self.client.logs(project=self.name)
