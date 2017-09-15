@@ -1,6 +1,11 @@
 import shutil
 import  pathlib
 
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
+
 class Path:
     def __init__(self, path):
         self.volume = None
