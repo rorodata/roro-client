@@ -46,6 +46,7 @@ class Project:
         #return self.client.logs(project=self.name)
 
     def deploy(self):
+        print("Deploying project {}. This may take a few moments ...".format(self.name))
         with tempfile.TemporaryDirectory() as tmpdir:
             archive = self.archive(tmpdir)
             size = os.path.getsize(archive)

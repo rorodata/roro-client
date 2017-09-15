@@ -74,7 +74,10 @@ def test_deploy():
         json='your project has bee deployed', status=200
     )
     result = runner.invoke(cli.deploy)
-    assert result.output == 'your project has bee deployed\n'
+    assert result.output == (
+        'Deploying project credit-risk. This may take a few moments ...\n'
+        'your project has bee deployed\n'
+    )
 
 @responses.activate
 def test_bad_deploy():
