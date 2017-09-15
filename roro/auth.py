@@ -1,4 +1,5 @@
 import os
+import stat
 from netrc import netrc as _netrc
 from urllib.parse import urlparse
 import firefly
@@ -15,7 +16,7 @@ def just_login(email, password):
     return token
 
 def get_saved_login():
-    netrc_file = create_netrc_if_not_exists()
+    create_netrc_if_not_exists()
     rc = netrc()
 
     hostname = urlparse(config.SERVER_URL)[1]

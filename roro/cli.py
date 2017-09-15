@@ -1,6 +1,4 @@
 from __future__ import print_function
-import os
-import stat
 import time
 import itertools
 import click
@@ -11,7 +9,6 @@ from tabulate import tabulate
 from . import config
 from . import projects
 from . import helpers as h
-from .helpers import get_host_name, PY2
 from .projects import Project
 from . import auth
 from .path import Path

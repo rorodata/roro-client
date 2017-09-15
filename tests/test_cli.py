@@ -4,9 +4,8 @@ import yaml
 
 from roro import cli
 from roro import config
-from roro.cli import create_netrc_if_not_exists
+from roro.auth import create_netrc_if_not_exists, netrc
 from roro.helpers import get_host_name
-from netrc import netrc
 
 from click.testing import CliRunner
 
@@ -28,7 +27,6 @@ def setup_function(function):
 def teardown_function(function):
     netrc_file = create_netrc_if_not_exists()
     rc = netrc()
-    cli._fix_netrc(rc)
     host_name = get_host_name(config.SERVER_URL)
     if rc.hosts.get(host_name):
         rc.hosts.pop(host_name)
@@ -50,7 +48,7 @@ def test_login():
     # in roro/cli.py#44
     host_name = get_host_name(config.SERVER_URL)
     assert rc.hosts[host_name] == (
-        "'user@test.com'", None, "'auth_token'"
+        "user@test.com", None, "auth_token"
     )
 
 
