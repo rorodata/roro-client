@@ -9,6 +9,7 @@ import sys
 
 from netrc import netrc
 from tabulate import tabulate
+from . import config
 from . import projects
 from . import helpers as h
 from .helpers import get_host_name, PY2
@@ -47,7 +48,7 @@ def login(email, password):
         rc = netrc()
         _fix_netrc(rc)
         with open(netrc_file, 'w') as f:
-            host_name = get_host_name(projects.SERVER_URL)
+            host_name = get_host_name(config.SERVER_URL)
             if PY2:
                 email = email.encode('utf-8')
                 token = token.encode('utf-8')
@@ -151,8 +152,8 @@ def ps_restart(name):
     """
     pass
 
-@cli.command()
-def config():
+@cli.command(name="config")
+def _config():
     """Lists all config vars of this project.
     """
     project = projects.current_project()
@@ -363,5 +364,5 @@ def models_show(modelref):
     print(image)
 
 def main_dev():
-    projects.SERVER_URL = "http://api.local.rorodata.com:8080/"
+    config.SERVER_URL = "http://api.local.rorodata.com:8080/"
     cli()

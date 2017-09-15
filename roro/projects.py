@@ -1,21 +1,21 @@
 import os
+import tempfile
 import shutil
 import yaml
 import firefly
-from . import models
+from . import models, config
 from click import ClickException
 
-SERVER_URL = "https://api.rorodata.com/"
 
 def login(email, password):
-    client = firefly.Client(SERVER_URL)
+    client = firefly.Client(config.SERVER_URL)
     return client.login(email=email, password=password)
 
 class Project:
     def __init__(self, name, runtime=None):
         self.name = name
         self.runtime = runtime
-        self.client = firefly.Client(SERVER_URL)
+        self.client = firefly.Client(config.SERVER_URL)
 
     def create(self):
         return self.client.create(name=self.name)
@@ -121,7 +121,7 @@ class Project:
 
     @staticmethod
     def find_all():
-        client = firefly.Client(SERVER_URL)
+        client = firefly.Client(config.SERVER_URL)
         projects = client.projects()
         return [Project(p['name'], p.get('runtime')) for p in projects]
 
