@@ -46,22 +46,22 @@ class Project:
         #return self.client.logs(project=self.name)
 
     def deploy(self):
-        archive = self.archive()
-        size = os.path.getsize(archive)
-        with open(archive, 'rb') as f:
-            format = 'tar'
-            response =  self.client.deploy(
-                project=self.name,
-                archived_project=f,
-                size=size,
-                format=format
-            )
-        return response
+        with tempfile.TemporaryDirectory() as tmpdir:
+            archive = self.archive(tmpdir)
+            size = os.path.getsize(archive)
+            with open(archive, 'rb') as f:
+                format = 'tar'
+                response =  self.client.deploy(
+                    project=self.name,
+                    archived_project=f,
+                    size=size,
+                    format=format
+                )
+            return response
 
-    def archive(self, format='tar'):
-        root_dir = os.path.realpath(os.path.curdir)
-        dir_name = os.path.basename(root_dir)
-        return shutil.make_archive(dir_name, format)
+    def archive(self, rootdir, format='tar'):
+        base_name = os.path.join(rootdir, "roro-project-" + self.name)
+        return shutil.make_archive(base_name, format)
 
     def get_config(self):
         return self.client.get_config(project=self.name)
