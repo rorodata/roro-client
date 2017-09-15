@@ -1,4 +1,4 @@
-firefly-python>=0.1.4
+firefly-python>=0.1.7
 click>=6.7
 tabulate>=0.7.7
 PyYAML>=3.12
