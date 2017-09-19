@@ -1,10 +1,15 @@
 import os
-import tempfile
 import shutil
 import yaml
 from . import models, config
 from .client import Client
+from .helpers import PY2
 from click import ClickException
+
+if PY2:
+    from backports import tempfile
+else:
+    import tempfile
 
 
 class Project:
