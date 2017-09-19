@@ -12,6 +12,7 @@ from . import helpers as h
 from .projects import Project
 from . import auth
 from .path import Path
+from . import __version__
 
 from firefly.client import FireflyError
 from requests import ConnectionError
@@ -38,6 +39,7 @@ class CatchAllExceptions(click.Group):
             sys.exit(3)
 
 @click.group(cls=CatchAllExceptions)
+@click.version_option(version=__version__)
 def cli():
     pass
 
@@ -56,6 +58,10 @@ def login(email, password):
         click.echo(e)
         raise
 
+@cli.command()
+def version():
+    """Prints the version of roro client."""
+    cli.main(args=['--version'])
 
 @cli.command(name="projects")
 def _projects():
