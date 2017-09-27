@@ -112,6 +112,13 @@ class ModelImage:
             self._model = self._load_model()
         return self._model
 
+    def _load_model(self):
+        f = self.client.get_model(
+                    project=self.project,
+                    name=self.name,
+                    version=self.version)
+        return joblib.load(f)
+
     def save(self, comment):
         """Saves a new version of the model image.
         """
