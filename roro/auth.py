@@ -64,11 +64,7 @@ class netrc(_netrc):
         # work-around to fix that
         if file is None:
             file = self.find_default_file()
-
-        if PY2:
-            _netrc.__init__(self, file=file)
-        else:
-            super().__init__(file=file)
+        _netrc.__init__(self, file=file)
 
     def find_default_file(self):
         filename = "_netrc" if sys.platform == 'win32' else ".netrc"
