@@ -2,6 +2,7 @@ from __future__ import print_function
 import io
 import joblib
 import re
+import shutil
 
 def get_model_repository(client, project, name):
     """Returns the ModelRepository with given name from the specified project.
@@ -113,13 +114,16 @@ class ModelImage:
         return self._model
 
     def _load_model(self):
-        f = self.client.get_model(
-                    project=self.project,
-                    name=self.name,
+        f = self._repo.client.get_model(
+                    project=self._repo.project,
+                    name=self._repo.name,
                     version=self.version)
-        return joblib.load(f)
+        f2 = io.BytesIO()
+        shutil.copyfileobj(f, f2)
+        f2.seek(0)
+        return joblib.load(f2)
 
-    def save(self, comment):
+    def save(self, comment=""):
         """Saves a new version of the model image.
         """
         if self.id is not None:
@@ -129,6 +133,7 @@ class ModelImage:
 
         f = io.BytesIO()
         joblib.dump(self._model, f)
+        f.seek(0)
         self['Content-Encoding'] = 'joblib'
         self._repo.client.save_model(
             project=self._repo.project,
