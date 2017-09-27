@@ -1,6 +1,5 @@
 import os
 import sys
-import pathlib
 import stat
 from netrc import netrc as _netrc
 import firefly
@@ -68,7 +67,7 @@ class netrc(_netrc):
 
     def find_default_file(self):
         filename = "_netrc" if sys.platform == 'win32' else ".netrc"
-        p = pathlib.Path(os.path.expanduser('~')).joinpath(filename)
+        p = os.path.join(os.path.expanduser('~'), filename)
         return str(p)
 
     def __repr__(self):
