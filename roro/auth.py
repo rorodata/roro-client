@@ -1,4 +1,6 @@
 import os
+import sys
+import pathlib
 import stat
 from netrc import netrc as _netrc
 import firefly
@@ -57,6 +59,18 @@ class netrc(_netrc):
 
     See https://github.com/python/cpython/pull/2491
     """
+    def __init__(self, file=None):
+        # The stdlib netrc doesn't find the right netrc file by default
+        # work-around to fix that
+        if file is None:
+            file = self.find_default_file()
+        super().__init__(file=file)
+
+    def find_default_file(self):
+        filename = "_netrc" if sys.platform == 'win32' else ".netrc"
+        p = pathlib.Path.home().joinpath(filename)
+        return str(p)
+
     def __repr__(self):
         """Dump the class data in the format of a .netrc file."""
         rep = ""
