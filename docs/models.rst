@@ -44,7 +44,7 @@ Here is a sample script to save a new version of an ML model::
     # run the training algorithm to build the model
     model = train_machine_learning_model()
 
-    model_image = model_repo.new_image(model)
+    model_image = model_repo.new_model_image(model)
     model_image['Input-Data-Source'] = 's3://credit-risk-dataset-201706'
     model_image['Accuracy'] = 0.89
     model_image.attach("log.txt", open("log.txt"))
@@ -63,7 +63,7 @@ And another script that predicts from a saved model. ::
     model_image = model_repo.get_model_image(tag="latest")
 
     # get the actual model object
-    model = model_repo.get_model()
+    model = model_image.get_model()
 
     def predict(features):
         return model.predict(features)
