@@ -63,6 +63,17 @@ def version():
     """Prints the version of roro client."""
     cli.main(args=['--version'])
 
+@cli.command()
+def whoami():
+    """prints the details of current user.
+    """
+    user = auth.whoami()
+    if user:
+        click.echo(user['email'])
+    else:
+        click.echo("You are not logged in yet.")
+        sys.exit(1)
+
 @cli.command(name="projects")
 def _projects():
     """Lists all the projects.
