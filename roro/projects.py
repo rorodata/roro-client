@@ -21,15 +21,15 @@ class Project:
     def create(self):
         return self.client.create(name=self.name)
 
-    def run(self, command):
-        job = self.client.run(project=self.name, command=command)
+    def run(self, command, instance_size=None):
+        job = self.client.run(project=self.name, command=command, instance_size=instance_size)
         return job
 
     def stop(self, jobid):
         self.client.stop(project=self.name, jobid=jobid)
 
-    def run_notebook(self):
-        job = self.client.run_notebook(project=self.name)
+    def run_notebook(self, instance_size=None):
+        job = self.client.run_notebook(project=self.name, instance_size=instance_size)
         return job
 
     def ps(self, jobid=None, all=False):
