@@ -33,7 +33,7 @@ You can verify the version of the client, using::
 	$ roro version
 	roro, version 0.1.6
 
-Once installed, make sure you log in to the platform using:
+Once installed, make sure you log in to the platform using::
 
 	$ roro login
 	Email address: anand@rorodata.com
@@ -64,7 +64,7 @@ And help about any particular command using::
 Project Organization
 ^^^^^^^^^^^^^^^^^^^^
 
-Each project in the rorodata platform contains a special file named `roro.yml`. It specifies project-name, the runtime, the services to run and the periodic tasks.
+Each project in the rorodata platform contains a special file named ``roro.yml``. It specifies project-name, the runtime, the services to run and the periodic tasks.
 
 Sample organization of a project looks something like this::
 
@@ -83,14 +83,14 @@ The `roro.yml` file looks something like this::
 	  - name: default
 	    function: predict.predict
 
-The field ``project`` indicates the name of the project. Project name is unique. The field ``runtime`` indicates the software runtime to use. The default runtime is `python3`. The available runtimes are described later in this section.
+The field ``project`` indicates the name of the project. Project name is unique. The field ``runtime`` indicates the software runtime to use. The default runtime is ``python3``. The available runtimes are described later in this section.
 
 The field ``services`` indicates the services to run. The file format of the ``roro.yml`` file is described in detail in section below.
 
 Deploying the Project
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
-Once the code and the `roro.yml` file are ready, you can deploy the project using the deploy command. ::
+Once the code and the ``roro.yml`` file are ready, you can deploy the project using the deploy command. ::
 
 	$ roro deploy
 	Deploying project credit-risk. This may take a few moments ...
@@ -101,11 +101,11 @@ Once the code and the `roro.yml` file are ready, you can deploy the project usin
 
 	Deployed version 5 of credit-risk project.
 
-Please remember that the deploy command must the run from the project directory, the directory where the `roro.yml` file is present.
+Please remember that the deploy command must the run from the project directory, the directory where the ``roro.yml`` file is present.
 
-The deploy command all the contents of the project directory and submit it to the platform. The platform looks at the roro.yml file and creates a new docker image with the latest code using the specified runtime as the base image and installing any python packages specified in the `requirements.txt` file, if present.
+The deploy command all the contents of the project directory and submit it to the platform. The platform looks at the roro.yml file and creates a new docker image with the latest code using the specified runtime as the base image and installing any python packages specified in the ``requirements.txt`` file, if present.
 
-After creating the docker image, it continues to run the specified services and expose them at an URL end point. The service with name `default` is considered special and that service will be exposed at https://<project-name>.rorocloud.io/ and all other services will be exposed as https://<project-name>--<service-name>.rorocloud.io/.
+After creating the docker image, it continues to run the specified services and expose them at an URL end point. The service with name `default` is considered special and that service will be exposed at ``https://<project-name>.rorocloud.io/`` and all other services will be exposed as ``https://<project-name>--<service-name>.rorocloud.io/``.
 
 Running Scripts
 ^^^^^^^^^^^^^^^
@@ -128,7 +128,7 @@ Please remember that it uses the code that is last deployed. If you have any cha
 Running notebooks
 ^^^^^^^^^^^^^^^^^
 
-Notebooks can be run using the ``roro run:notebook`` command.
+Notebooks can be run using the ``roro run:notebook`` command. ::
 
 	$ roro run:notebook
 	starting the job
