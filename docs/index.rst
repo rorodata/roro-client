@@ -149,4 +149,5 @@ Reference
    :maxdepth: 3
 
    cli
+   cron
    models
