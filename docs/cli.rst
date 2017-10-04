@@ -166,3 +166,38 @@ Or the other way::
 
 	$ roro cp data:dataset.csv dataset.csv
 
+Config
+------
+
+The rorodata platform provides support for storing the project secrets like database urls, access and secret keys for various third-party services, etc.
+
+The config variables are set in the environment of every process that is run in the project.
+
+The ``roro config`` comamnd lists all the available config variables. ::
+
+	$ roro config
+	=== credit-risk Config Vars
+	DATABSE_URL: postgres://yxulQ5Ib9:QOJoFJZwv5FYIM0y@db1.example.com
+
+One or more config variables can be added using the ``roro config:set`` command. ::
+
+	$ roro config:set X=1 Y=2
+	Updated config vars
+
+	$ roro config
+	=== credit-risk Config Vars
+	DATABSE_URL: postgres://yxulQ5Ib9:QOJoFJZwv5FYIM0y@db1.example.com
+	X: 1
+	Y: 2
+
+The ``roro config:unset`` command is used to unset config vars. ::
+
+	$ roro config:set X
+	Updated config vars
+
+	$ roro config
+	=== credit-risk Config Vars
+	DATABSE_URL: postgres://yxulQ5Ib9:QOJoFJZwv5FYIM0y@db1.example.com
+	Y: 2
+
+Please remember that the services are not restarted after ``config:set`` or ``config:unset``. They may have to be restarted using the ``roro deploy`` command to use the new configuration.
