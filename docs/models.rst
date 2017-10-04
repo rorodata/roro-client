@@ -47,7 +47,6 @@ Here is a sample script to save a new version of an ML model::
     model_image = model_repo.new_model_image(model)
     model_image['Input-Data-Source'] = 's3://credit-risk-dataset-201706'
     model_image['Accuracy'] = 0.89
-    model_image.attach("log.txt", open("log.txt"))
     model_image.save(comment="Built new model using the data till June 2017")
 
 And another script that predicts from a saved model. ::
@@ -137,14 +136,6 @@ The API
    .. py:method:: set_metadata(self, metadata)
 
       Sets the model metadata.
-
-   .. py:method:: attach(self, filename, fileobj)
-
-      Adds a new attachment to the model image.
-
-   .. py:method:: get_attachments(self)
-
-      Returns all the attachments added to this model image.
 
    .. py:method:: get_model(self)
 
