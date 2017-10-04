@@ -1,7 +1,10 @@
 Scheduling Periodic Tasks
 -------------------------
 
-The rordata platform has support for scheduling periodic tasks. The periodic tasks are specifed in the `roro.yml` file in the project. Here is a sample tasks::
+The rordata platform has support for scheduling periodic tasks. The periodic tasks are specifed in the `roro.yml` file in the project. Here is a sample ``roro.yml`` file with a periodic task::
+
+	project: credit-risk
+	runtime: python3
 
     tasks:
         - name: retrain
