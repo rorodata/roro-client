@@ -192,7 +192,7 @@ One or more config variables can be added using the ``roro config:set`` command.
 
 The ``roro config:unset`` command is used to unset config vars. ::
 
-	$ roro config:set X
+	$ roro config:unset X
 	Updated config vars
 
 	$ roro config
