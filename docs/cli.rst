@@ -53,7 +53,7 @@ While deploy is just a single command, lot of things happen behind the scenes.
 * All the services specified in the ``roro.yml`` are (re)started and end points are created
 * The scheduled tasks are updated
 
-The deploy command prints the summary of changes and end points for each service in the project.
+The deploy command prints the summary of changes and end points for each service in the project. ::
 
 	$ roro deploy
 	Deploying project credit-risk. This may take a few moments ...
