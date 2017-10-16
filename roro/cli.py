@@ -183,8 +183,8 @@ def env_unset(names):
     print("Updated config vars")
 
 @cli.command(context_settings={"allow_interspersed_args": False})
-@click.option('-s', '--instance-size', default='C1',
-    help="size of the instance to run the job on. Available instance sizes are C1 and C2")
+@click.option('-s', '--instance-size',
+    help="size of the instance to run the job on")
 @click.argument('command', nargs=-1)
 def run(command, instance_size=None):
     """Runs the given script in foreground.
@@ -194,8 +194,8 @@ def run(command, instance_size=None):
     print("Started new job", job["jobid"])
 
 @cli.command(name='run:notebook', context_settings={"allow_interspersed_args": False})
-@click.option('-s', '--instance-size', default='C1',
-    help="size of the instance to run the job on. Available instance sizes are C1 and C2")
+@click.option('-s', '--instance-size',
+    help="size of the instance to run the job on")
 def run_notebook(instance_size=None):
     """Runs a notebook.
     """
