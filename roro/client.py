@@ -6,7 +6,7 @@ from . import auth
 
 class Client(firefly.Client):
     def prepare_headers(self):
-        login = auth.get_saved_login()
+        login = self.get_token()
         if not login:
             return {}
 
@@ -16,3 +16,9 @@ class Client(firefly.Client):
             'Authorization': 'Basic {}'.format(basic_auth)
         }
 
+    def get_token(self):
+        """Returns the saved auth token.
+
+        The auth token is read from the netrc file.
+        """
+        return auth.get_saved_login()
