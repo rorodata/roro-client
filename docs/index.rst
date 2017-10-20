@@ -24,7 +24,7 @@ The rorodata platform is modeled around projects. Each project is independent un
 
 The primary interface to work with the rorodata platform is using a command-line tool called ``roro``. It can be installed using pip::
 
-	$ pip install roro-client
+	$ pip install roro
 
 It is suggested to use Python 3 when installing the client.
 
