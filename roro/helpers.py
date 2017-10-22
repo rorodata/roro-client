@@ -14,9 +14,10 @@ def parse_time(timestr):
     if not timestr:
         return datetime.datetime.utcnow()
     try:
-        return datetime.datetime.strptime(timestr, "%Y-%m-%d %H:%M:%S.%f")
+        timestr = timestr.replace(' ', 'T')
+        return datetime.datetime.strptime(timestr, "%Y-%m-%dT%H:%M:%S.%f")
     except ValueError:
-        return datetime.datetime.strptime(timestr, "%Y-%m-%d %H:%M:%S")
+        return datetime.datetime.strptime(timestr, "%Y-%m-%dT%H:%M:%S")
 
 
 def datestr(then, now=None):
