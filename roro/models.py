@@ -17,6 +17,12 @@ def list_model_repositories(client, project):
 
 class ModelRepository:
     def __init__(self, client, project, name):
+        """Creates a new ModelRepository.
+
+        :param client: the client instance used to interact with the roro-server.
+        :param project: name of the project
+        :param name: name of the repository
+        """
         self.client = client
         self.project = project
         self.name = name
@@ -53,6 +59,29 @@ class ModelImage:
         self._model = model
         self._metadata = metadata
         self.comment = comment or self.get("Comment")
+
+    @staticmethod
+    def from_activity(project, metadata):
+        """Creates a ModelImage from the activity record.
+
+        The metadata should be a dictionary that looks like:
+
+            {
+                'Model-ID': 'f9b3e50c0426'
+                'Model-Name': 'test-model',
+                'Model-Version': 6,
+                'Date': '2017-09-27 15:46:31.939073',
+                'Content-Encoding': 'joblib',
+                'Comment': 'created new model'
+            }
+
+        :param project: name of the project
+        :param metadata: metadata of the ModelImage
+        :return: ModelImage created from the metadata
+        """
+        repo = ModelRepository(client=project.client, project=project.name, name=metadata['Model-Name'])
+        comment = metadata.pop('Comment', '')
+        return ModelImage(repo=repo, metadata=metadata, comment=comment)
 
     @property
     def id(self):

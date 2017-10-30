@@ -94,7 +94,7 @@ class Project:
 
     def get_model_activity(self, repo=None):
         response = self.client.get_activity(project=self.name, name=repo)
-        return [models.ModelImage(repo=self, metadata=x) for x in response]
+        return [models.ModelImage.from_activity(project=self, metadata=x) for x in response]
 
     def copy(self, src, dest):
         if src.is_volume():
