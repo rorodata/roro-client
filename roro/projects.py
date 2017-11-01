@@ -127,6 +127,12 @@ class Project:
         projects = client.projects()
         return [Project(p['name'], p.get('runtime')) for p in projects]
 
+    @staticmethod
+    def find(name):
+        client = Client(config.SERVER_URL)
+        p = client.get_project(name)
+        return p and Project(p['name'], p.get('runtime'))
+
     def __repr__(self):
         return "<Project {}>".format(self.name)
 
