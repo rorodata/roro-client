@@ -6,6 +6,25 @@ import firefly
 from . import config
 from .helpers import get_host_name, PY2
 
+class AuthProvider:
+    def get_auth(self):
+        """Returns the username, password of the current user.
+        """
+        raise NotImplmentedError()
+
+class NetrcAuthProvider(AuthProvider):
+    """An implementation of AuthProvider that returns the login details
+    from netrc file.
+
+    This returns the login details from the netrc file if present. This
+    does not deal about writing the login details to the netrc file.
+    """
+    def get_auth(self):
+        """Returns the username, password of the current user from netrc file.
+        """
+        return get_saved_login()
+
+
 def login(email, password):
     token = just_login(email, password)
     save_token(email, token)
