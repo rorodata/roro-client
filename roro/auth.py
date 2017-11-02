@@ -10,7 +10,7 @@ class AuthProvider:
     def get_auth(self):
         """Returns the username, password of the current user.
         """
-        raise NotImplmentedError()
+        raise NotImplementedError()
 
 class NetrcAuthProvider(AuthProvider):
     """An implementation of AuthProvider that returns the login details
