@@ -130,7 +130,7 @@ class Project:
     @staticmethod
     def find(name):
         client = Client(config.SERVER_URL)
-        p = client.get_project(name)
+        p = client.get_project(project=name)
         return p and Project(p['name'], p.get('runtime'))
 
     def __repr__(self):
