@@ -91,6 +91,15 @@ def create(project):
     p.create()
     print("Created project:", project)
 
+@cli.command(name="project:delete")
+@click.argument('name')
+def project_delete(name):
+    """Deletes a project
+    """
+    p = Project(name)
+    p.delete()
+    click.echo("Project {} deleted successfully.".format(name))
+
 @cli.command()
 def deploy():
     """Pushes the local changes to the cloud and restarts all the services.
