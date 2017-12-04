@@ -91,7 +91,7 @@ def create(project):
     p.create()
     print("Created project:", project)
 
-@cli.command(name="project:delete")
+@cli.command(name="projects:delete")
 @click.argument('name')
 def project_delete(name):
     """Deletes a project
