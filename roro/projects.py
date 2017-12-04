@@ -21,6 +21,9 @@ class Project:
     def create(self):
         return self.client.create(name=self.name)
 
+    def delete(self):
+        return self.client.delete(name=self.name)
+
     def run(self, command, instance_size=None):
         job = self.client.run(project=self.name, command=command, instance_size=instance_size)
         return job
