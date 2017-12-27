@@ -3,4 +3,4 @@
 
 from .projects import get_current_project
 
-__version__ = '0.1.9'
+__version__ = '0.1.10'
