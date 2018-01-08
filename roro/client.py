@@ -4,7 +4,7 @@ import base64
 import firefly
 from . import auth
 
-class Client(firefly.Client):
+class RoroClient(firefly.Client):
     """Client to roro-server.
 
     This extends the firefly.Client to support custom Authorization header.
@@ -30,3 +30,6 @@ class Client(firefly.Client):
         return {
             'Authorization': 'Basic {}'.format(basic_auth)
         }
+
+# For backward compatibility. Will be removed in future releases
+Client = RoroClient

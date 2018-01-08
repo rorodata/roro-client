@@ -2,7 +2,7 @@ import os
 import shutil
 import yaml
 from . import models, config
-from .client import Client
+from .client import RoroClient
 from .helpers import PY2
 from click import ClickException
 
@@ -16,7 +16,7 @@ class Project:
     def __init__(self, name, runtime=None):
         self.name = name
         self.runtime = runtime
-        self.client = Client(config.SERVER_URL)
+        self.client = RoroClient(config.SERVER_URL)
 
     def create(self):
         return self.client.create(name=self.name)
@@ -126,13 +126,13 @@ class Project:
 
     @staticmethod
     def find_all():
-        client = Client(config.SERVER_URL)
+        client = RoroClient(config.SERVER_URL)
         projects = client.projects()
         return [Project(p['name'], p.get('runtime')) for p in projects]
 
     @staticmethod
     def find(name):
-        client = Client(config.SERVER_URL)
+        client = RoroClient(config.SERVER_URL)
         p = client.get_project(project=name)
         return p and Project(p['name'], p.get('runtime'))
 
