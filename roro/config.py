@@ -1,2 +1,3 @@
+from . import helpers as h
 
-SERVER_URL = "https://api.rorodata.com/"
+SERVER_URL = h.get_roro_domain()
