@@ -1,5 +1,13 @@
 import datetime
 import sys
+from os.path import expanduser, join
+import click
+
+try:
+    import configparser
+except ImportError:
+    # Python 2
+    import ConfigParser as configparser
 
 try:
     from urllib.parse import urlparse
@@ -133,3 +141,39 @@ def get_host_name(url):
     host = urlparse(url).netloc
     host_name = host.split(':')[0]
     return host_name
+
+def configure_roro_domain():
+    click.echo("No rorodata domain is configured.")
+    click.echo("Please enter your rorodata domain.")
+
+    config_file = join(expanduser("~"), ".roro.conf")
+
+    p = configparser.ConfigParser()
+    p.read(config_file)
+
+    if not p.has_section("default"):
+        p.add_section("default")
+
+    domain = str(input(">>> "))
+
+    if not domain.startswith('http'):
+        domain = 'https://' + domain
+
+    p.set("default", "domain", domain)
+
+    with open(config_file, "w") as f:
+        p.write(f)
+
+    click.echo("rorodata domain saved in {}".format(config_file))
+    click.echo()
+
+def get_roro_domain():
+    config_file = join(expanduser("~"), ".roro.conf")
+    p = configparser.ConfigParser()
+    p.read(config_file)
+
+    try:
+        return p.get("default", "domain")
+    except (configparser.NoOptionError, configparser.NoSectionError):
+        configure_roro_domain()
+        return get_roro_domain()
