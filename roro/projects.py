@@ -31,6 +31,15 @@ class Project:
     def stop(self, jobid):
         self.client.stop(project=self.name, jobid=jobid)
 
+    def stop_service(self, service_name):
+        self.client.stop_service(project=self.name, service_name=service_name)
+
+    def start_service(self, service_name):
+        self.client.start_service(project=self.name, service_name=service_name)
+
+    def restart_service(self, service_name):
+        self.client.restart_service(project=self.name, service_name=service_name)
+
     def run_notebook(self, instance_size=None):
         job = self.client.run_notebook(project=self.name, instance_size=instance_size)
         return job

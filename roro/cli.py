@@ -215,10 +215,26 @@ def run_notebook(instance_size=None):
 @cli.command()
 @click.argument('jobid')
 def stop(jobid):
-    """Stops a service with reference to jobid
+    """Stops a job by service name or job id.
     """
     project = projects.current_project()
     project.stop(jobid)
+
+@cli.command()
+@click.argument('service_name')
+def start(service_name):
+    """Starts the service specified by the given name.
+    """
+    project = projects.current_project()
+    project.start_service(jobid)
+
+@cli.command()
+@click.argument('service_name')
+def restart(service_name):
+    """Restarts the service specified by the given name.
+    """
+    project = projects.current_project()
+    project.restart_service(service_name)
 
 @cli.command()
 @click.argument('jobid')
