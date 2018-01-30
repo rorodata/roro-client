@@ -226,7 +226,7 @@ def start(service_name):
     """Starts the service specified by the given name.
     """
     project = projects.current_project()
-    project.start_service(jobid)
+    project.start_service(service_name)
 
 @cli.command()
 @click.argument('service_name')
