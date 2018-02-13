@@ -1,2 +1,3 @@
+import os
 
-SERVER_URL = "https://api.rorodata.com/"
+SERVER_URL = os.getenv("RORODATA_SERVER_URL", "https://api.rorodata.com/")
