@@ -3,6 +3,8 @@ import io
 import joblib
 import re
 import shutil
+import tempfile
+from . import serializers
 
 def get_model_repository(client, project, name):
     """Returns the ModelRepository with given name from the specified project.
@@ -160,17 +162,18 @@ class ModelImage:
         if self._model is None:
             raise Exception("model object is not specified")
 
-        f = io.BytesIO()
-        joblib.dump(self._model, f)
-        f.seek(0)
-        self['Content-Encoding'] = 'joblib'
-        self._repo.client.save_model(
-            project=self._repo.project,
-            name=self._repo.name,
-            model=f,
-            comment=comment,
-            **self._metadata)
-        # TODO: Update the version and model-id
+        with tempfile.TemporaryDirectory() as tmpdir:
+            filepath = os.path.join(tmpdir, "model.model")
+            serializer_name = serializers.save_model(self.model, filepath)
+            self['Content-Encoding'] = serializer_name
+            self._repo.client.save_model(
+                project=self._repo.project,
+                name=self._repo.name,
+                model=open(filepath, 'rb'),
+                comment=comment,
+                **self._metadata)
+            # TODO: Update the version and model-id
+
 
     def __repr__(self):
         return "<ModelImage {}/{}@{}>".format(self._repo.project, self._repo.name, self.version)
