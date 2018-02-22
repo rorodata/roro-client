@@ -165,7 +165,7 @@ class ModelImage:
 
         with tempfile.TemporaryDirectory() as tmpdir:
             filepath = os.path.join(tmpdir, "model.model")
-            serializer_name = serializers.save_model(self.model, filepath)
+            serializer_name = serializers.save_model(self._model, filepath)
             self['Content-Encoding'] = serializer_name
             self._repo.client.save_model(
                 project=self._repo.project,
