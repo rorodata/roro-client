@@ -5,6 +5,9 @@
     serialization support for various types of models.
 """
 from collections import OrderedDict
+import logging
+
+logger = logging.getLogger(__name__)
 
 # mapping from serializer name to class
 _SERIALIZERS = OrderedDict()
