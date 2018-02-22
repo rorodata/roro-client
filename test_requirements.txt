@@ -3,5 +3,6 @@ pytest-flakes==2.0.0
 responses==0.7.0
 h5py
 keras
+tensorflow
 scikit-learn
 
