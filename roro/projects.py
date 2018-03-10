@@ -133,17 +133,17 @@ class Project:
                 size=src.size
             )
 
-    @staticmethod
-    def find_all():
+    @classmethod
+    def find_all(cls):
         client = RoroClient(config.SERVER_URL)
         projects = client.projects()
-        return [Project(p['name'], p.get('runtime')) for p in projects]
+        return [cls(p['name'], p.get('runtime')) for p in projects]
 
-    @staticmethod
-    def find(name):
+    @classmethod
+    def find(cls, name):
         client = RoroClient(config.SERVER_URL)
         p = client.get_project(project=name)
-        return p and Project(p['name'], p.get('runtime'))
+        return p and cls(p['name'], p.get('runtime'))
 
     def __repr__(self):
         return "<Project {}>".format(self.name)
