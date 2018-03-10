@@ -40,8 +40,8 @@ class Project:
     def restart_service(self, service_name):
         self.client.restart_service(project=self.name, service_name=service_name)
 
-    def run_notebook(self, instance_size=None):
-        job = self.client.run_notebook(project=self.name, instance_size=instance_size)
+    def run_notebook(self, instance_size=None, lab=False):
+        job = self.client.run_notebook(project=self.name, instance_size=instance_size, lab=lab)
         return job
 
     def ps(self, jobid=None, all=False):
