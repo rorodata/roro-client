@@ -151,7 +151,10 @@ class Project:
 def current_project():
     if os.path.exists("roro.yml"):
         d = yaml.safe_load(open("roro.yml"))
-        return Project(d['project'], d.get('runtime'))
+        project_name = d.get("project") or os.getenv("RORODATA_PROJECT")
+        if project_name is None:
+            raise ClickException("Please specify `project` in roro.yml file.")
+        return Project(project_name, d.get('runtime'))
     else:
         raise ClickException("Unable to find roro.yml")
 
