@@ -14,7 +14,7 @@ class RoroClient(firefly.Client):
     The ``AUTH_PROVIDER`` field which maintains the class of AuthProvider. It
     can be changed to provide alternative implementations of AuthProvider.
     """
-    AUTH_PROVIDER = auth.NetrcAuthProvider
+    AUTH_PROVIDER = auth.RorodataAuthProvider
 
     def __init__(self, *args, **kwargs):
         firefly.Client.__init__(self, *args, **kwargs)
@@ -25,8 +25,12 @@ class RoroClient(firefly.Client):
         if not login:
             return {}
 
-        both = "{}:{}".format(login['email'], login['password']).encode('utf-8')
-        basic_auth = base64.b64encode(both).decode("ascii")
+        if isinstance(login, str):
+            basic_auth = login
+        else:
+            both = "{}:{}".format(login['email'], login['password']).encode('utf-8')
+            basic_auth = base64.b64encode(both).decode("ascii")
+
         return {
             'Authorization': 'Basic {}'.format(basic_auth)
         }

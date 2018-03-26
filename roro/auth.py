@@ -12,18 +12,16 @@ class AuthProvider:
         """
         raise NotImplementedError()
 
-class NetrcAuthProvider(AuthProvider):
+class RorodataAuthProvider(AuthProvider):
     """An implementation of AuthProvider that returns the login details
-    from netrc file.
+    from the environment or netrc file.
 
-    This returns the login details from the netrc file if present. This
+    This returns the login details from environment variable RORODATA_AUTHORIZATION
+    if available, or else from the netrc file if present. This
     does not deal about writing the login details to the netrc file.
     """
     def get_auth(self):
-        """Returns the username, password of the current user from netrc file.
-        """
-        return get_saved_login()
-
+        return os.getenv("RORODATA_AUTHORIZATION") or get_saved_login()
 
 def login(email, password):
     token = just_login(email, password)
