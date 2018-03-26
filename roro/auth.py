@@ -32,10 +32,6 @@ def just_login(email, password):
     token = client.login(email=email, password=password)
     return token
 
-def whoami():
-    client = firefly.Client(config.SERVER_URL)
-    return client.whoami()
-
 def get_saved_login():
     create_netrc_if_not_exists()
     rc = netrc()

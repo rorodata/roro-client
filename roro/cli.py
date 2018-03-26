@@ -13,6 +13,7 @@ from .projects import Project
 from . import auth
 from .path import Path
 from . import __version__
+from .client import RoroClient
 
 from firefly.client import FireflyError
 from requests import ConnectionError
@@ -67,7 +68,8 @@ def version():
 def whoami():
     """prints the details of current user.
     """
-    user = auth.whoami()
+    client = RoroClient(config.SERVER_URL)
+    user = client.whoami()
     if user:
         click.echo(user['email'])
     else:
