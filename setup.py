@@ -23,6 +23,7 @@ Links
 from setuptools import setup, find_packages
 import os.path
 import sys
+import re
 
 PY2 = (sys.version_info.major == 2)
 
@@ -31,11 +32,11 @@ def get_version():
     """
     root = os.path.dirname(__file__)
     version_path = os.path.join(root, "roro/__init__.py")
-    with open(version_path) as f:
-        code = f.read()
-        env = {}
-        exec(code, env, env)
-        return env['__version__']
+    text = open(version_path).read()
+    rx = re.compile("^__version__ = '(.*)'", re.M)
+    m = rx.search(text)
+    version = m.group(1)
+    return version
 
 install_requires = [
     'firefly-python>=0.1.9',
