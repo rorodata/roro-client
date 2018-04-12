@@ -140,9 +140,9 @@ class Project:
         return [cls(p['name'], p.get('runtime')) for p in projects]
 
     @classmethod
-    def find(cls, name):
+    def find(cls, name, active_only=True):
         client = RoroClient(config.SERVER_URL)
-        p = client.get_project(project=name)
+        p = client.get_project(project=name, active_only=active_only)
         return p and cls(p['name'], p.get('runtime'))
 
     def __repr__(self):
