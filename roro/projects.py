@@ -19,7 +19,7 @@ class Project:
         self.client = RoroClient(config.SERVER_URL)
 
     def create(self):
-        return self.client.create(name=self.name)
+        return self.client.create(name=self.name, runtime=self.runtime)
 
     def delete(self):
         return self.client.delete(name=self.name)
