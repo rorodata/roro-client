@@ -13,10 +13,12 @@ else:
 
 
 class Project:
+    SERVER_URL = config.SERVER_URL
+
     def __init__(self, name, runtime=None):
         self.name = name
         self.runtime = runtime
-        self.client = RoroClient(config.SERVER_URL)
+        self.client = RoroClient(self.SERVER_URL)
 
     def create(self):
         return self.client.create(name=self.name, runtime=self.runtime)
@@ -135,13 +137,13 @@ class Project:
 
     @classmethod
     def find_all(cls):
-        client = RoroClient(config.SERVER_URL)
+        client = RoroClient(cls.SERVER_URL)
         projects = client.projects()
         return [cls(p['name'], p.get('runtime')) for p in projects]
 
     @classmethod
     def find(cls, name, active_only=True):
-        client = RoroClient(config.SERVER_URL)
+        client = RoroClient(cls.SERVER_URL)
         p = client.get_project(project=name, active_only=active_only)
         return p and cls(p['name'], p.get('runtime'))
 
