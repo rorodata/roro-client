@@ -86,12 +86,19 @@ def _projects():
 
 @cli.command()
 @click.argument('project')
-def create(project):
+@click.option('--repo-url', help="Initialize the project with a git repo", default=None)
+def create(project, repo_url=None):
     """Creates a new Project.
     """
     p = Project(project)
-    p.create()
-    print("Created project:", project)
+    if repo_url:
+        task = p.create(repo_url=repo_url)
+        click.echo("Waiting for the project to get created...")
+        response = task.wait()
+        click.echo(response)
+    else:
+        p.create()
+        click.echo("Created project:", project)
 
 @cli.command(name="projects:delete")
 @click.argument('name')

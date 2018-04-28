@@ -21,8 +21,23 @@ class Project:
         self.runtime = runtime
         self.client = RoroClient(self.SERVER_URL)
 
-    def create(self):
-        return self.client.create(name=self.name, runtime=self.runtime)
+    def create(self, repo_url=None):
+        """Creates a new project.
+
+        If the optional argument repo_url is specified, it initialized the project
+        from that git repo. Since it is long task, the task id is returned instead
+        of the project.
+
+        Returns the project data when repo_url is absent.
+        """
+        result = self.client.create(
+            name=self.name,
+            runtime=self.runtime,
+            repo_url=repo_url)
+        if repo_url:
+            return Task(result['task_id'])
+        else:
+            return result
 
     def delete(self):
         return self.client.delete(name=self.name)
