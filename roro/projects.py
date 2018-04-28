@@ -1,6 +1,7 @@
 import os
 import shutil
 import yaml
+import time
 from . import models, config
 from .client import RoroClient
 from .helpers import PY2
@@ -60,7 +61,7 @@ class Project:
         return self.client.logs(project=self.name, jobid=jobid)
         #return self.client.logs(project=self.name)
 
-    def deploy(self):
+    def deploy(self, async=False):
         print("Deploying project {}. This may take a few moments ...".format(self.name))
         with tempfile.TemporaryDirectory() as tmpdir:
             archive = self.archive(tmpdir)
@@ -71,9 +72,13 @@ class Project:
                     project=self.name,
                     archived_project=f,
                     size=size,
-                    format=format
+                    format=format,
+                    async=async
                 )
-            return response
+            if async:
+                return Task(response['task_id'])
+            else:
+                return response
 
     def archive(self, rootdir, format='tar'):
         base_name = os.path.join(rootdir, "roro-project-" + self.name)
@@ -164,3 +169,24 @@ get_current_project = current_project
 
 def list_projects():
     return Project.find_all()
+
+class Task:
+    def __init__(self, task_id):
+        self.task_id = task_id
+        self._client = RoroClient(config.SERVER_URL)
+
+    def poll(self):
+        return self._client.poll_task(task_id=self.task_id)
+
+    def wait(self):
+        """Waits for the task to finish and returns the result of the task.
+
+        Raises Exception if the task fails.
+        """
+        while True:
+            response = self.poll()
+            if 'error' in response:
+                raise Exception(response['error'])
+            elif 'result' in response and response['status'] == 'SUCCESS':
+                return response['result']
+            time.sleep(1)

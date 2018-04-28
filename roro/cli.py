@@ -108,7 +108,8 @@ def deploy():
     """
     # TODO: validate credentials
     project = projects.current_project()
-    response = project.deploy()
+    task = project.deploy(async=True)
+    response = task.wait()
     click.echo(response)
 
 @cli.command()
