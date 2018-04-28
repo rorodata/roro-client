@@ -3,7 +3,9 @@ import time
 import itertools
 import click
 import datetime
+import os
 import sys
+import logging
 
 from tabulate import tabulate
 from . import config
@@ -17,6 +19,7 @@ from .client import RoroClient
 
 from firefly.client import FireflyError
 from requests import ConnectionError
+
 
 class PathType(click.ParamType):
     name = 'path'
@@ -39,10 +42,18 @@ class CatchAllExceptions(click.Group):
             click.echo('ERROR %s' % exc)
             sys.exit(3)
 
+def setup_logger(verbose=False):
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=level,
+        format="%(asctime)s %(name)s [%(levelname)s] %(message)s"
+    )
+
 @click.group(cls=CatchAllExceptions)
 @click.version_option(version=__version__)
-def cli():
-    pass
+def cli(verbose=False):
+    if os.getenv("RORO_DEBUG"):
+        setup_logger(verbose=True)
 
 @cli.command()
 @click.option('--email', prompt='Email address')
