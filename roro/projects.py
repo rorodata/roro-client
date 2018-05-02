@@ -35,7 +35,7 @@ class Project:
             runtime=self.runtime,
             repo_url=repo_url)
         if repo_url:
-            return Task(result['task_id'])
+            return Task(result['task_id'], self.SERVER_URL)
         else:
             return result
 
@@ -91,7 +91,7 @@ class Project:
                     async=async
                 )
             if async:
-                return Task(response['task_id'])
+                return Task(response['task_id'], self.SERVER_URL)
             else:
                 return response
 
@@ -186,9 +186,9 @@ def list_projects():
     return Project.find_all()
 
 class Task:
-    def __init__(self, task_id):
+    def __init__(self, task_id, server_url):
         self.task_id = task_id
-        self._client = RoroClient(config.SERVER_URL)
+        self._client = RoroClient(server_url)
 
     def poll(self):
         return self._client.poll_task(task_id=self.task_id)
