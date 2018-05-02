@@ -1,16 +1,20 @@
 import os
 import responses
 import yaml
-
+import traceback
 from roro import cli
 from roro import config
 from roro.auth import create_netrc_if_not_exists, netrc
+from roro.projects import Project
 from roro.helpers import get_host_name
 
 from click.testing import CliRunner
 
 runner = CliRunner()
 config.SERVER_URL = 'https://127.0.0.1:8080'
+Project.SERVER_URL = config.SERVER_URL
+
+cli.setup_logger(verbose=True)
 
 def mock_get_root():
     responses.add(
@@ -69,9 +73,16 @@ def test_deploy():
     mock_get_root()
     responses.add(
         responses.POST, config.SERVER_URL+'/deploy',
-        json='your project has bee deployed', status=200
+        json={"task_id": "abcd1234"}, status=200
+    )
+    responses.add(
+        responses.POST, config.SERVER_URL+'/poll_task',
+        json={"status": "SUCCESS", "result": "your project has bee deployed"}, status=200
     )
     result = runner.invoke(cli.deploy)
+    if result.exit_code != 0 and result.exc_info:
+        traceback.print_exception(*result.exc_info)
+    assert result.exit_code == 0
     assert result.output == (
         'Deploying project credit-risk. This may take a few moments ...\n'
         'your project has bee deployed\n'
