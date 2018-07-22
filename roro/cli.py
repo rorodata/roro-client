@@ -125,7 +125,7 @@ def deploy():
     """Pushes the local changes to the cloud and restarts all the services.
     """
     # TODO: validate credentials
-    project = projects.current_project()
+    project = projects.current_project(roroyml_required=True)
     task = project.deploy(async=True)
     response = task.wait()
     click.echo(response)
